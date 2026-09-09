@@ -1,0 +1,1398 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NUR BY SAJIT</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#03100a;color:#fff;font:15px system-ui,Arial,sans-serif}
+body{min-height:100vh}button,input{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:20;padding:16px;background:#06170e;border-bottom:1px solid #254c38}
+.logo{font-size:22px;font-weight:800;letter-spacing:1.8px}.muted{color:#91a99b;font-size:12px}
+.page{display:none;padding:18px 15px 92px;max-width:900px;margin:auto}.page.active{display:block}
+.hero,.card,.item,.player{background:#091c12;border:1px solid #204530;border-radius:18px}
+.hero{padding:20px;margin-bottom:14px}.hero h1{margin:0 0 7px;font-size:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card{padding:16px;min-height:112px}
+.icon{font-size:28px;margin-bottom:8px}.card h3{margin:0 0 5px}
+.search{width:100%;padding:13px 14px;background:#07170e;color:#fff;border:1px solid #28523c;border-radius:14px;outline:0;margin:8px 0 12px}
+.item{padding:14px;margin:9px 0}.item h3{margin:0 0 5px}.item button,.primary{border:0;background:#18a66b;color:#fff;border-radius:12px;padding:10px 13px}
+.bottom{position:fixed;left:0;right:0;bottom:0;height:68px;background:#06130c;border-top:1px solid #234732;display:flex;justify-content:space-around;align-items:center;z-index:30}
+.nav{background:none;border:0;color:#789486;font-size:10px;text-align:center}.nav span{display:block;font-size:20px}
+.player{padding:18px;margin-top:12px}.play{width:66px;height:66px;border:0;border-radius:50%;background:#18a66b;color:#fff;font-size:23px;margin:14px 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid #183826}
+.toggle{width:48px;height:27px;border-radius:30px;background:#294234;padding:3px;border:0}.toggle i{display:block;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s}.toggle.on{background:#18a66b}.toggle.on i{transform:translateX(21px)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}.btns button{border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:12px;padding:10px 12px}
+#viewer{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;min-height:100svh;background:#000;z-index:100;display:none;overflow:hidden;touch-action:none}#viewer.show{display:block}
+.scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:1;display:block;transform:scale(1);transform-origin:center center;will-change:transform;image-rendering:auto;-webkit-backface-visibility:hidden;backface-visibility:hidden;filter:none!important;background:#000;}
+.scene.show{opacity:1}
+.vshade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.15) 55%,rgba(0,0,0,.55))}
+.vtop,.vbottom{position:absolute;left:14px;right:14px;z-index:5;display:flex;align-items:center;gap:10px}
+.vtop{top:14px;justify-content:space-between}.vbottom{bottom:18px;justify-content:center;flex-wrap:wrap}
+.round{border:1px solid #ffffff55;background:#0008;color:#fff;width:44px;height:44px;border-radius:50%;font-size:21px}
+.vtitle{flex:1;padding:10px 14px;border-radius:15px;background:#0009;backdrop-filter:blur(8px)}.vtitle b{display:block;font-size:16px}.vtitle small{color:#c7d5cc}
+.vbottom button{border:1px solid #ffffff55;background:#0009;color:#fff;border-radius:14px;padding:11px 14px}
+.progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff22;z-index:6}.progress i{display:block;height:100%;width:0;background:#fff}
+.rain{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity .45s ease;overflow:hidden}
+.rain.on{opacity:1}
+.rain:before{content:"";position:absolute;inset:-35% -15%;opacity:.22;background:repeating-linear-gradient(112deg,transparent 0 18px,rgba(220,238,255,.20) 19px,transparent 21px 43px);background-size:95px 95px;animation:rainSheet .75s linear infinite;transform:skewX(-8deg)}
+.rain:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 115%,rgba(205,225,218,.15),transparent 58%),linear-gradient(to bottom,rgba(180,205,225,.05),transparent 42%);animation:rainMist 2.8s ease-in-out infinite alternate}
+.drop{position:absolute;top:-22%;width:var(--w,1px);height:var(--h,62px);border-radius:999px;background:linear-gradient(160deg,transparent 0%,rgba(190,225,255,.12) 22%,rgba(225,242,255,.72) 62%,rgba(255,255,255,.9) 78%,transparent 100%);filter:blur(var(--blur,.2px));transform:rotate(var(--slant,11deg));animation:fall var(--dur,0.8s) linear infinite;box-shadow:0 0 3px rgba(210,235,255,.18)}
+.drop.fast{filter:blur(.05px);box-shadow:0 0 4px rgba(220,240,255,.25)}
+@keyframes fall{to{transform:translate3d(var(--wind,35px),130vh,0) rotate(var(--slant,11deg))}}
+@keyframes rainSheet{to{background-position:25px 105px}}
+@keyframes rainMist{to{transform:translateY(10px);opacity:.72}}
+.visualGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vcard{position:relative;overflow:hidden;border-radius:17px;border:1px solid #204530;background:#091c12;min-height:210px;cursor:pointer}.vcard img{width:100%;height:210px;object-fit:cover;display:block}.vcard div{position:absolute;left:8px;right:8px;bottom:8px;background:#0009;border-radius:12px;padding:9px}.vcard b{font-size:14px}.vcard small{display:block;color:#cbd7d0;margin-top:3px}
+
+.qtools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.qtools button{border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:12px;padding:9px 11px}.ayah{background:#07170e;border:1px solid #214a35;border-radius:18px;padding:16px;margin:10px 0;transition:.25s}.ayah.active{border-color:#18a66b;box-shadow:0 0 0 2px #18a66b33;background:#0a2116}.ayahTop{display:flex;align-items:center;justify-content:space-between;gap:10px}.ayahNo{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#123c29;color:#bde8d1;font-weight:700}.ayahPlay{border:0;background:#18a66b;color:#fff;border-radius:50%;width:42px;height:42px;font-size:17px}.arabic{font-family:serif;font-size:29px;line-height:2;text-align:right;direction:rtl;margin:14px 0 7px}.bangla{font-size:16px;line-height:1.8;color:#dce8e1}.qmeta{display:flex;justify-content:space-between;align-items:center;color:#91a99b;font-size:12px}.loader{padding:22px;text-align:center;color:#9eb3a6}.error{border:1px solid #6d3939;background:#241010;color:#ffd7d7;padding:14px;border-radius:14px}.audioBar{position:sticky;bottom:74px;z-index:10;background:#06130cf2;border:1px solid #28523c;border-radius:16px;padding:10px;backdrop-filter:blur(10px)}.audioBar audio{width:100%}
+@media(min-width:700px){.grid,.visualGrid{grid-template-columns:repeat(3,1fr)}}
+.gameGrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.gameCard{min-height:145px;border:1px solid #315f49;border-radius:20px;background:linear-gradient(145deg,#102c1d,#132b3a);color:#fff;padding:16px;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.2)}.gameCard:nth-child(2){background:linear-gradient(145deg,#3a2051,#172f49)}.gameCard:nth-child(3){background:linear-gradient(145deg,#4a3212,#263e22)}.gameCard:nth-child(4){background:linear-gradient(145deg,#51213b,#183d55)}.gameCard:nth-child(5){background:linear-gradient(145deg,#173e5b,#3a2b59)}.gameCard:nth-child(6){background:linear-gradient(145deg,#4b3215,#173f34)}.gameCard span{display:block;font-size:34px;margin-bottom:10px}.gameCard b{display:block;font-size:16px}.gameCard small{display:block;color:#bfd3c9;margin-top:5px}.gameStage{margin-top:14px;background:#091c12;border:1px solid #2b5a42;border-radius:20px;padding:16px}.gameHead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:12px}.gameTitle{font-size:21px;font-weight:800}.gameScore{font-size:13px;color:#9fe0bd}.gameQuestion{font-size:20px;line-height:1.55;margin:16px 0}.gameOptions{display:grid;gap:9px}.gameOpt{border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:14px;padding:13px;text-align:left}.gameOpt.good{background:#155c3b;border-color:#69d59b}.gameOpt.bad{background:#5a2424;border-color:#d88989}.gameFeedback{margin-top:12px;padding:12px;border-radius:13px;background:#07170e;line-height:1.5}.gameBtn{border:1px solid #2b5a42;background:#18a66b;color:#fff;border-radius:13px;padding:11px 14px}.memoryGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.memoryCard{aspect-ratio:1;border:1px solid #2b5a42;border-radius:13px;background:#102b1d;color:#fff;font-size:25px;font-weight:800}.memoryCard.open{background:#163d2a}.tapTarget{width:110px;height:110px;border-radius:50%;border:0;background:#18a66b;color:#fff;font-size:22px;font-weight:800;display:block;margin:22px auto}.numberGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.numberGrid button{padding:18px 8px;border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:13px;font-size:18px}@media(max-width:430px){.gameGrid{grid-template-columns:1fr 1fr}.memoryGrid{grid-template-columns:repeat(4,1fr)}}
+
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:flex-end;justify-content:center;z-index:1000;padding:12px}.modal.show{display:flex}.modalBox{width:min(720px,100%);max-height:82vh;overflow:auto;background:#071c12;border:1px solid #2b5a42;border-radius:22px 22px 12px 12px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.modalHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.modalHead b{font-size:21px}.modalHead button{background:#12291e;color:#fff;border:1px solid #2b5a42;border-radius:10px;padding:8px 12px}.ayahGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.ayahChoice{background:#0c281a;color:#dff8e9;border:1px solid #27583f;border-radius:11px;padding:11px 4px;font-size:15px}.ayahChoice.selected{background:#1b5b3b;border-color:#75d9a0;font-weight:700}@media(max-width:430px){.ayahGrid{grid-template-columns:repeat(5,1fr)}}
+ 
+.aiHero{position:relative;overflow:hidden}.aiOrb{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:#0d3020;border:1px solid #2b6248;font-size:28px}.aiNotice{margin-top:14px;padding:11px 12px;border-radius:12px;background:#07170e;color:#9fb7aa;font-size:12px;line-height:1.5}.aiQuick{display:flex;gap:8px;overflow:auto;padding:2px 0 10px}.aiQuick button{white-space:nowrap;border:1px solid #28523c;background:#0b2417;color:#dcebe3;border-radius:999px;padding:9px 12px}.aiChat{min-height:120px}.aiBubble{max-width:88%;padding:13px 14px;border-radius:16px;margin:9px 0;line-height:1.55}.aiBubble.bot{background:#0b2417;border:1px solid #204530}.aiBubble.user{margin-left:auto;background:#123c28;border:1px solid #2c6a4c}.aiBubble p{margin:7px 0 0}.aiRef{font-size:11px;color:#9bd2b5;border-top:1px solid #234732;margin-top:9px;padding-top:8px}.aiComposer{position:sticky;bottom:74px;z-index:10;background:#03100a;padding-top:8px}.aiComposer textarea{resize:none}.button{cursor:pointer}
+
+.dashboardStats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.dashCard{background:#07170e;border:1px solid #204530;border-radius:16px;padding:14px}.dashBig{font-size:22px;font-weight:800;margin-top:5px}.dashActions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dashAction{padding:14px!important;text-align:left!important;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.16)!important;box-shadow:0 8px 22px rgba(0,0,0,.18)}.dashAction:nth-child(1){background:linear-gradient(135deg,#123f70,#0b6b65)!important}.dashAction:nth-child(2){background:linear-gradient(135deg,#5a2d76,#173c78)!important}.dashAction:nth-child(3){background:linear-gradient(135deg,#70510d,#7b2f55)!important}.dashAction:nth-child(4){background:linear-gradient(135deg,#174f62,#3b2b73)!important}.dashAction:nth-child(5){background:linear-gradient(135deg,#164d36,#135b70)!important}.dashAction:nth-child(6){background:linear-gradient(135deg,#6a284e,#293a78)!important}.dashAction b{color:#fff}.dashAction .dashMuted{color:#e2ece8}.dashAction b{display:block;margin-bottom:4px}.dashMuted{font-size:11px;color:#789486}.continueBox{display:flex;align-items:center;justify-content:space-between;gap:10px}.recentItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #173524}.recentItem:last-child{border-bottom:0}.downloadProgress{margin-top:12px;background:#10281b;border:1px solid #28523c;border-radius:14px;padding:10px}.downloadTrack{height:10px;background:#07170e;border-radius:999px;overflow:hidden}.downloadFill{height:100%;width:0;background:linear-gradient(90deg,#18a66b,#7be0b0);transition:width .2s}.downloadPct{font-weight:800;color:#9fe0bd;margin-bottom:7px}.downloadFile{padding:14px 0;border-bottom:1px solid #183826}.downloadFile:last-child{border-bottom:0}.downloadBtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+
+.homeHero{position:relative;min-height:300px;padding:28px 20px!important;overflow:hidden;border-radius:26px!important;background-image:linear-gradient(180deg,rgba(0,0,0,.10),rgba(0,0,0,.76)),url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85");background-position:center;background-size:cover;transition:background-image 1s ease-in-out,transform 1s ease-in-out;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 18px 50px rgba(0,0,0,.38)}
+.homeHero:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(3,16,10,.05),rgba(3,16,10,.48));pointer-events:none}.homeHero>*{position:relative;z-index:1}.homeHero h1{font-size:30px;margin:0 0 5px;text-shadow:0 3px 15px #000}.homeHero .muted{color:#d6e5dc}.homeWelcome{font-size:13px;letter-spacing:.4px;margin-bottom:16px}.homePrayer{display:grid;grid-template-columns:1.1fr .9fr;gap:10px}.homePrayer .dashCard{background:rgba(3,16,10,.62);backdrop-filter:blur(10px);border-color:rgba(255,255,255,.18)}
+.dailyAyah{background:linear-gradient(145deg,#173b67,#142c4f 45%,#173f31);border:1px solid #2d6248;border-radius:22px;padding:18px;position:relative;overflow:hidden}.dailyAyah:after{content:"۞";position:absolute;right:12px;top:-10px;font-size:85px;color:#4d8b68;opacity:.10}.dailyTag{font-size:11px;color:#9bd2b5;letter-spacing:1px;text-transform:uppercase}.dailyArabic{font-family:serif;font-size:25px;line-height:1.9;text-align:right;direction:rtl;margin:12px 0}.dailyBangla{line-height:1.75;color:#dbe9e1}.dailyRef{font-size:12px;color:#91a99b;margin-top:10px}
+@media(max-width:430px){.homeHero{min-height:285px}.homePrayer{grid-template-columns:1fr 1fr}.homeHero h1{font-size:26px}.dailyArabic{font-size:23px}}
+.scene{transition:opacity 1.05s cubic-bezier(.22,.61,.36,1)!important;filter:none!important;image-rendering:auto}.vcard img{filter:none!important;image-rendering:auto}
+#viewer{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;z-index:999999!important;background:#000!important;overflow:hidden!important;}#viewer .scene{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;opacity:0!important;transform:scale(1.02)!important;will-change:transform,opacity;backface-visibility:hidden;transition:opacity .85s cubic-bezier(.22,.61,.36,1),transform 3s cubic-bezier(.2,.7,.2,1)!important;background:#000;}#viewer .scene.show{opacity:1!important;}#viewer .scene.zin{transform:scale(1.14)!important;}#viewer .scene.activeLayer{z-index:2!important;}#viewer .scene.nextLayer{z-index:1!important;}
+</style>
+</head>
+<body>
+<header><div class="logo">NUR BY SAJIT</div><div class="muted">Quran • Hadith • Dhikr • AI • Visuals • Games</div></header>
+
+<section id="home" class="page active">
+<div class="hero homeHero"><div class="homeWelcome">NUR BY SAJIT • DAILY NOOR</div><h1>Assalamu Alaikum 🤍</h1><div class="muted">আপনার প্রতিদিনের Quran, Hadith, Jikir ও ইবাদতের সঙ্গী</div>
+<div class="homePrayer"><div class="dashCard"><div class="dashMuted">🕌 Next Prayer</div><div id="dashNextPrayer" class="dashBig">—</div></div><div class="dashCard"><div class="dashMuted">⏳ Countdown</div><div id="dashCountdown" class="dashBig">—</div></div></div></div>
+<div class="card"><div class="continueBox"><div><h3 style="margin:0 0 4px">▶️ Continue Reading</h3><div id="continueText" class="muted">এখনও কোনো Surah শুরু করা হয়নি।</div></div><button id="continueBtn" class="primary" style="display:none">Continue</button></div></div>
+<div class="dailyAyah"><div class="dailyTag">✦ Daily Ayah</div><div class="dailyArabic">إِنَّ مَعَ الْعُسْرِ يُسْرًا</div><div class="dailyBangla">“নিশ্চয়ই কষ্টের সাথে স্বস্তি রয়েছে।”</div><div class="dailyRef">সূরা আশ-শারহ • ৯৪:৬</div></div>
+<div class="card"><h3>⚡ Quick Access</h3><div class="dashActions">
+<button class="dashAction" onclick="page('quran')"><b>📖 Quran</b><span class="dashMuted">114 Surahs</span></button>
+<button class="dashAction" onclick="page('hadith')"><b>📚 Hadith</b><span class="dashMuted">Sihah Sittah</span></button>
+<button class="dashAction" onclick="page('jikir')"><b>📿 Jikir</b><span class="dashMuted">Tasbih counter</span></button>
+<button class="dashAction" onclick="page('ai')"><b>🤖 NUR AI</b><span class="dashMuted">Islamic assistant</span></button>
+<button class="dashAction" onclick="page('prayer')"><b>🕌 Prayer</b><span class="dashMuted">Prayer & Azan</span></button>
+<button class="dashAction" onclick="page('audio')"><b>🎧 Nasheed</b><span class="dashMuted">Owner-added audio</span></button>
+<button class="dashAction" onclick="page('games')"><b>🎮 Gaming Hub</b><span class="dashMuted">Quiz + 5 fun games</span></button>
+</div></div>
+<div class="card" onclick="page('downloads')" style="cursor:pointer;background:linear-gradient(135deg,#123f70,#173f31);border-color:#2d6248"><h3>📥 Offline Downloads</h3><div class="muted" style="color:#dbe9e1">Downloaded Quran Surah এখানে পাবেন — Internet ছাড়াই শুনুন ও পড়ুন।</div><div id="homeDownloadCount" style="margin-top:10px;font-weight:800;color:#9fe0bd">0 Surah saved</div></div>
+<div class="card"><h3>🌙 Daily Reminder</h3><p class="muted" style="line-height:1.6">নামাজ সময়মতো আদায় করুন, নিয়মিত Quran পড়ুন এবং প্রতিদিন কিছু সময় জিকিরের জন্য রাখুন।</p></div>
+<div class="card"><h3>🕘 Recently Used</h3><div id="recentList"><div class="muted">এখনও কোনো activity নেই।</div></div></div>
+<div class="grid">
+<div class="card" onclick="page('downloads')"><div class="icon">📥</div><h3>Offline Downloads</h3><div class="muted">Saved Quran</div></div>
+<div class="card" onclick="page('visuals')"><div class="icon">🎬</div><h3>Visual</h3><div class="muted">Nature scenes</div></div>
+<div class="card" onclick="page('games')"><div class="icon">🎮</div><h3>Gaming Hub</h3><div class="muted">Quiz + 5 games</div></div>
+<div class="card" onclick="page('favorites')"><div class="icon">⭐</div><h3>Favorites</h3><div class="muted">Saved items</div></div>
+<div class="card" onclick="page('settings')"><div class="icon">⚙️</div><h3>Settings</h3><div class="muted">Control everything</div></div>
+</div></section>
+
+<section id="downloads" class="page">
+<div class="hero"><h1>📥 Offline Downloads</h1><div class="muted">একবার download করলে এই folder থেকে Internet ছাড়াই Quran পড়া ও শোনা যাবে।</div></div>
+<div class="card"><div id="downloadFolderList"></div></div>
+</section>
+
+<section id="quran" class="page">
+<div class="hero"><h1>📖 Quran</h1><div class="muted">Search by Surah name or number</div><input id="qsearch" class="search" placeholder="Example: Al-Baqarah or 2" oninput="filterQuran(this.value)"></div>
+<div id="surahList"></div><div class="card" style="margin-top:12px"><h3>📥 Offline Quran</h3><div class="muted">যে Surah download করবেন, পরে internet ছাড়াও এই device-এ খোলা যাবে।</div><div id="offlineQuranList" style="margin-top:10px"></div></div></section>
+
+<section id="player" class="page">
+<div class="hero"><h1 id="surahTitle">Surah</h1><div id="surahInfo" class="muted">Real Quran • Arabic + বাংলা • Ayah audio</div>
+<div class="qtools"><button onclick="page('quran')">← Surah List</button><button onclick="toggleQuranPlay()" id="masterPlay">▶ Play</button><button onclick="openAyahChooser()">☷ Choose Ayah</button><button onclick="toggleQuranVisual()" id="qVisualBtn">🎬 Visual ON</button><button onclick="saveCurrentSurah()">⭐ Save</button><button onclick="downloadCurrentSurah()">📥 Offline</button></div></div>
+<div id="quranStatus" class="loader">Quran data loading…</div>
+<div id="ayahList"></div>
+<div id="ayahChooser" class="modal" onclick="if(event.target===this)closeAyahChooser()"><div class="modalBox"><div class="modalHead"><div><b>Choose Ayah</b><div class="muted" id="chooserInfo">Select any ayah to play</div></div><button onclick="closeAyahChooser()">✕</button></div><div id="ayahChoices" class="ayahGrid"></div></div></div>
+<div class="audioBar"><audio id="qAudio" controls preload="none"></audio><div class="qmeta"><span id="audioNow">Ready</span><span id="audioNext">Auto-next ON</span></div></div>
+</section>
+
+<section id="hadith" class="page">
+<div class="hero"><h1>📚 Hadith</h1><div class="muted">Sihah Sittah • Arabic + বাংলা • Search by number or text</div><input id="hadithSearch" class="search" placeholder="Example: Bukhari 550 or prayer" oninput="filterHadith(this.value)"></div>
+<div id="hadithList"></div>
+<div id="hadithReader" class="modal" onclick="if(event.target===this)closeHadithReader()"><div class="modalBox"><div class="modalHead"><div><b id="hadithReaderTitle">Hadith</b><div class="muted" id="hadithReaderInfo">Loading…</div></div><button onclick="closeHadithReader()">✕</button></div><div id="hadithReaderBody"></div></div></div>
+</section>
+
+<section id="jikir" class="page"><div class="hero"><h1>📿 Jikir & Tasbih</h1><div class="muted">Choose a dhikr, set a target, then tap to count</div><div class="row" style="margin-top:14px"><span>Dhikr</span><select id="dhikrSelect" class="search" style="width:58%;padding:10px" onchange="changeDhikr()"><option value="SUBHANALLAH">سُبْحَانَ اللّٰهِ • SUBHANALLAH</option><option value="ALHAMDULILLAH">الْحَمْدُ لِلّٰهِ • ALHAMDULILLAH</option><option value="ALLAHUAKBAR">اللّٰهُ أَكْبَرُ • ALLAHU AKBAR</option><option value="ASTAGHFIRULLAH">أَسْتَغْفِرُ اللّٰهَ • ASTAGHFIRULLAH</option><option value="SALAWAT">اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ • SALAWAT</option></select></div><div class="row"><span>Target</span><select id="targetSelect" class="search" style="width:30%;padding:10px" onchange="changeTarget()"><option>33</option><option>100</option><option>300</option><option>1000</option></select></div><div id="count" style="font-size:64px;text-align:center;margin:18px 0 4px">0</div><div id="dhikrLabel" style="text-align:center;font-size:18px;font-weight:700">SUBHANALLAH</div><div id="dhikrProgress" class="muted" style="text-align:center;margin:7px 0 14px">0 / 33</div><button class="primary" style="width:100%;padding:20px;font-size:20px;border-radius:18px" onclick="countTap()">📿 TAP</button><div style="display:flex;gap:10px;margin-top:10px"><button class="btns" style="flex:1;border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:12px;padding:12px" onclick="resetCount()">↻ Reset</button><button class="btns" style="flex:1;border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:12px;padding:12px" onclick="undoCount()">↩ Undo</button></div><div class="item" style="margin-top:14px"><b>Daily Jikir</b><p class="muted">Your count is saved on this device. Keep your intention sincere and consistent.</p></div></div></section>
+
+<section id="ai" class="page">
+<div class="hero aiHero">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="aiOrb">🤖</div><div><h1 style="margin:0">NUR AI</h1><div class="muted">Islamic assistant • Source-aware guidance</div></div>
+  </div>
+  <div class="aiNotice">ℹ️ NUR AI will distinguish general guidance from a formal fatwa and show references when available.</div>
+</div>
+<div class="aiQuick">
+  <button onclick="aiAskQuick('Ayatul Kursi কোন সূরায়?')">📖 Ayatul Kursi</button>
+  <button onclick="aiAskQuick('নামাজের আগে ওযুর ফরজ কয়টি?')">🕌 ওযুর ফরজ</button>
+  <button onclick="aiAskQuick('সবর সম্পর্কে কুরআনের একটি আয়াত দাও')">🌙 সবর</button>
+  <button onclick="aiAskQuick('সদকা সম্পর্কে একটি সহিহ হাদিস বলো')">💚 সদকা</button>
+</div>
+<div id="aiChat" class="aiChat">
+  <div class="aiBubble bot"><b>🤖 NUR AI</b><p>আসসালামু আলাইকুম। আপনার ইসলামিক প্রশ্ন লিখুন। আমি উত্তরটি সংক্ষেপে দেব এবং সম্ভব হলে কুরআন/হাদিসের reference দেখাবো।</p></div>
+</div>
+<div class="aiComposer">
+  <textarea id="aiInput" class="search" rows="2" placeholder="যেমন: রমজানে সফরের রোজার হুকুম কী?"></textarea>
+  <div style="display:flex;gap:8px">
+    <button class="primary" style="flex:1" onclick="askAI()">Ask NUR AI</button>
+    <button class="item button" onclick="clearAI()" style="border:1px solid #28523c;background:#0b2417;color:#fff;border-radius:12px;padding:10px 13px">Clear</button>
+  </div>
+</div>
+</section>
+
+<section id="games" class="page">
+<div class="hero gameHero"><h1>🎮 NUR Gaming Hub</h1><div class="muted">Fun, quick and family-friendly games • Quiz questions repeat না হওয়া পর্যন্ত নতুন প্রশ্ন আসবে</div></div>
+<div class="gameGrid">
+<button class="gameCard" onclick="startGame('quiz')"><span>🧠</span><b>Islamic Quiz</b><small>Unlimited • New questions</small></button>
+<button class="gameCard" onclick="startGame('memory')"><span>🃏</span><b>Memory Match</b><small>Match the pairs</small></button>
+<button class="gameCard" onclick="startGame('scramble')"><span>🔤</span><b>Word Scramble</b><small>Unscramble the word</small></button>
+<button class="gameCard" onclick="startGame('tap')"><span>⚡</span><b>Quick Tap</b><small>Tap as fast as you can</small></button>
+<button class="gameCard" onclick="startGame('truefalse')"><span>✅</span><b>True or False</b><small>Fast fact challenge</small></button>
+<button class="gameCard" onclick="startGame('number')"><span>🔢</span><b>Number Rush</b><small>Find the target number</small></button>
+</div>
+<div id="gameStage" class="gameStage" style="display:none"></div>
+</section>
+
+<section id="visuals" class="page"><div class="hero"><h1>🎬 Visual Gallery</h1><div class="muted">Premium online nature/sky/ocean/space photos • প্রতি 3 সেকেন্ডে পরিবর্তন • Smooth Zoom In</div></div><div class="visualGrid" id="visualGrid"></div></section>
+
+<section id="prayer" class="page">
+<div class="hero">
+<h1>🕌 Prayer & Qibla</h1>
+<div class="muted" id="prayerLocation">Location not set • Tap below to calculate local times</div>
+<div class="row"><span>Next Prayer</span><b id="nextPrayer">—</b></div>
+<div class="row"><span>Countdown</span><b id="prayerCountdown">—</b></div>
+<div id="prayerTimes" style="margin-top:8px"></div>
+<div class="qtools" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+<button onclick="getPrayerLocation()">📍 Use My Location</button>
+<button id="prayerAzanToggle" onclick="togglePrayerAzan()">🔔 Azan ON</button>
+</div>
+</div>
+
+<div class="hero" style="margin-top:12px;text-align:center">
+<h2>🧭 Qibla</h2>
+<div class="muted">Point your phone toward the direction shown by the needle.</div>
+<div id="qiblaCompass" style="width:210px;height:210px;border:2px solid rgba(255,255,255,.18);border-radius:50%;margin:18px auto;position:relative;display:flex;align-items:center;justify-content:center">
+<div style="position:absolute;top:12px;font-weight:800">N</div>
+<div style="position:absolute;right:12px;font-weight:800">E</div>
+<div style="position:absolute;bottom:12px;font-weight:800">S</div>
+<div style="position:absolute;left:12px;font-weight:800">W</div>
+<div id="qiblaNeedle" style="position:absolute;width:5px;height:135px;border-radius:6px;background:#fff;transform-origin:50% 88%;transition:transform .35s ease"></div>
+<div style="font-size:34px">🕋</div>
+</div>
+<b id="qiblaDegree">Qibla: —° from true north</b>
+<div class="qtools" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+<button onclick="enableQibla()">🧭 Enable Compass</button>
+</div>
+<div class="muted" id="qiblaStatus" style="margin-top:8px">Use your location first for the Qibla bearing.</div>
+</div>
+</section>
+
+<section id="audio" class="page">
+ <div class="hero">
+  <h1>🎧 Audio</h1>
+  <div class="muted">NUR Nasheed • Owner-added audio only</div>
+ </div>
+ <div class="nurA-card">
+  <div class="nurA-icon">🎵</div>
+  <h2>Nasheed Library</h2>
+  <p class="nurA-muted">এখানে এখন কোনো Nasheed নেই। শুধু Owner/Admin যোগ করলে এখানে দেখাবে।</p>
+  <div id="nurAUserList"></div>
+  <div id="nurAEmpty" class="nurA-empty">🎧<br><b>Library Empty</b><br><span>Owner এখনো কোনো Nasheed যোগ করেননি।</span></div>
+ </div>
+ <div class="nurA-card nurA-owner">
+  <button class="nurA-ownerBtn" id="nurAOwnerBtn">🔐 Owner Panel</button>
+  <div id="nurAAdminBox" class="nurA-hide">
+   <div class="nurA-adminTitle">👑 Owner / Admin</div>
+   <input id="nurAPin" type="password" inputmode="numeric" placeholder="Owner PIN">
+   <button class="nurA-btn" id="nurAUnlock">Unlock</button>
+   <div id="nurAUploadBox" class="nurA-hide">
+    <input id="nurAFile" type="file" accept="audio/*,.mp3,.m4a,.aac,.ogg,.wav,.flac,.opus,.webm">
+    <input id="nurATitle" type="text" placeholder="Nasheed name">
+    <input id="nurAArtist" type="text" placeholder="Artist / description (optional)">
+    <button class="nurA-btn" id="nurAAdd">➕ Import Nasheed</button>
+    <button class="nurA-btn gray" id="nurALock">🔒 Lock Owner Panel</button>
+    <div id="nurAStorageNote" class="nurA-note">💾 Checking browser storage…</div>
+    <div class="nurA-note">Import চাপো → ফোন থেকে audio বেছে নাও → Save Nasheed। MP3/M4A/AAC/OGG/WAV/FLAC/OPUS/WEBM এবং বড় audio file-এর জন্য কোনো artificial size limit নেই। Browser-এর IndexedDB কাজ না করলে app নিজে session-memory fallback ব্যবহার করবে, তাই import বন্ধ হবে না।</div>
+   </div>
+  </div>
+ </div>
+ <div id="nurAPlayer" class="nurA-card nurA-hide"></div>
+</section>
+
+<section id="settings" class="page"><div class="hero"><h1>⚙️ Settings</h1>
+<div class="muted" style="margin-bottom:14px">NUR BY SAJIT • আপনার পছন্দগুলো এই ডিভাইসে সংরক্ষণ হবে</div>
+<div class="setGroup"><h3>🎛 Playback & Visual</h3>
+<div class="row"><span>Quran Visual Animation</span><button id="animBtn" class="toggle on" onclick="toggleSetting('animBtn')"><i></i></button></div>
+<div class="row"><span>Visual Auto Change</span><button id="autoBtn" class="toggle on" onclick="toggleSetting('autoBtn')"><i></i></button></div>
+<div class="row"><span>Auto-next Audio</span><button id="nextBtn" class="toggle on" onclick="toggleSetting('nextBtn')"><i></i></button></div>
+</div>
+<div class="setGroup"><h3>🕌 Prayer & Notification</h3>
+<div class="row"><span>Automatic Azan</span><button id="azanBtn" class="toggle on" onclick="toggleSetting('azanBtn')"><i></i></button></div>
+<div class="row"><span>Prayer Notifications</span><button id="notifBtn" class="toggle on" onclick="toggleSetting('notifBtn')"><i></i></button></div>
+</div>
+<div class="setGroup"><h3>🔊 Audio</h3>
+<div class="row"><span>Default Volume</span><input id="defaultVol" type="range" min="0" max="1" value="1" step="0.01" style="width:130px" oninput="saveRangeSetting('defaultVol')"></div>
+<div class="row"><span>Sleep Timer</span><select id="sleepTimer" onchange="saveSelectSetting('sleepTimer')"><option value="0">Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option><option value="90">90 min</option></select></div>
+</div>
+<div class="setGroup"><h3>📱 App</h3>
+<div class="row"><span>Dark Mode</span><b>ON</b></div>
+<div class="row"><span>Language</span><select id="langSetting" onchange="saveSelectSetting('langSetting')"><option value="bn">বাংলা</option><option value="en">English</option><option value="ar">العربية</option></select></div>
+<button class="btn" onclick="resetSettings()" style="width:100%;margin-top:10px">♻️ Reset Settings</button>
+</div>
+</div></section>
+
+<section id="favorites" class="page"><div class="hero"><h1>⭐ Favorites</h1><div class="muted">আপনার saved Quran Ayah, Surah এবং Hadith</div></div><div id="favContent"></div></section>
+
+<div class="bottom">
+<button class="nav" onclick="page('home')"><span>⌂</span>Home</button>
+<button class="nav" onclick="page('quran')"><span>📖</span>Quran</button>
+<button class="nav" onclick="page('hadith')"><span>📚</span>Hadith</button>
+<button class="nav" onclick="page('jikir')"><span>📿</span>Jikir</button>
+<button class="nav" onclick="page('favorites')"><span>⭐</span>Favorites</button><button class="nav" onclick="page('settings')"><span>⚙️</span>Settings</button>
+</div>
+
+<div id="viewer">
+<img id="sceneA" class="scene" alt="" decoding="async"><img id="sceneB" class="scene" alt="" decoding="async">
+<div class="vshade"></div><div id="rain" class="rain"></div>
+<div class="vtop"><button class="round" onclick="closeVisual()">×</button><div class="vtitle"><b id="vname">1</b><small>3 sec • Smooth Transition • Zoom In</small></div><button class="round" onclick="nextVisual()">›</button></div>
+<div class="vbottom"><button onclick="prevVisual()">← Previous</button><button id="autoVisual" onclick="toggleAuto()">⏸ Stop Auto</button><button onclick="nextVisual()">Next →</button><button onclick="toggleVisualFullscreen()">⛶ Full Screen</button><button onclick="rainEffect()">🌧 Rain</button></div>
+<div class="progress"><i id="prog"></i></div>
+</div>
+
+<script>
+const VISUAL_COUNT = 82;
+// External photo collection: high-resolution photographs loaded from public image hosts.
+// Visuals are premium external photographs and require an internet connection.
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// 120+ varied photographic scenes; each entry is a different source/query.
+const photos=[
+"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1493246507139-91e7b0d8b4e8?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1482192505345-5655af888cc4?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1520962922320-2038eebab146?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1499346030926-9a72daac6c63?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1444090542259-0af2a1b7e3c0?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1494783367193-149034c05e8f?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1536599018102-9f803c140fc1?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1537346439163-eafb59bdc400?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1537526045572-fca8beed2a4f?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1535320404287-416e2c6d2b41?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1532680678473-a16f2cda8e43?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1532982116380-02ce47a3e03c?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1533079047304-3997643590ab?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1530518854704-23de978d2915?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1530645722516-a0c947925cf0?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1530953845756-f7ffd1ab1cf9?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1518593929011-2b5ef6be57c7?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1521292271236-2c2cc7c4d5a7?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1475924156734-0f6f1e7a5f67?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1519608487953-9b6b0b2a0d5f?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1521747116042-5a810fda9664?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1504707748692-419802cf939d?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1518709268804-4e9042af9f23?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1484151709479-3996843263cf?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1504703500545-4c4ee081b155?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1476040896332-d84e9246f456?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1509937991139-724301be9280?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1504941214544-9c1c44559ab4?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1506454499286-48c314609cd1?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1496496867708-485b7f148bfa?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1508182390781-8dd476c3237c?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1512203608426-ccf62b5bacd0?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1512187256255-409199cd3521?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1512204150185-ec347ed39ef3?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1665856170865-58c0f16d559b?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1507908708918-778587c9e563?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1647163927209-b7e5a9d53edc?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1647331910473-ad5df83e2861?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1530814246890-97315faa33f2?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1634713446438-324cd41693ec?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1634204873683-f3764d546b18?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1515619514436-f1d76c3ae356?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1595815905833-9f1024148e1f?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://images.unsplash.com/photo-1631539816626-9b5abd9acf9f?auto=format&fit=crop&fm=jpg&q=92&w=2400",
+"https://unsplash.com/photos/JuhxRDzAHok/download?force=true",
+"https://unsplash.com/photos/03Pv2Ikm5Hk/download?force=true",
+"https://unsplash.com/photos/chc-oAL0gBU/download?force=true",
+"https://unsplash.com/photos/eGJg5iRGlg8/download?force=true",
+"https://unsplash.com/photos/aHetdmuNoO4/download?force=true",
+"https://unsplash.com/photos/KzPefInJW58/download?force=true",
+"https://unsplash.com/photos/mf-o1E7omzk/download?force=true",
+"https://unsplash.com/photos/FWCUZqXCrUs/download?force=true",
+"https://unsplash.com/photos/5_eRcisHc2c/download?force=true",
+"https://unsplash.com/photos/aV7_rCZpvGY/download?force=true",
+"https://unsplash.com/photos/4mQbBC6Do0Y/download?force=true",
+"https://unsplash.com/photos/S5uV7ro4UPY/download?force=true",
+"https://unsplash.com/photos/lJF-vml60lA/download?force=true",
+"https://unsplash.com/photos/wHTRe0RzoDc/download?force=true",
+"https://unsplash.com/photos/LMVEF1KZwFE/download?force=true",
+"https://unsplash.com/photos/86rNiLqog4E/download?force=true",
+"https://unsplash.com/photos/xcQWMPm9fG8/download?force=true",
+"https://unsplash.com/photos/mSTK6URRWU8/download?force=true"
+];
+const surahs=[  'Al-Fatihah',
+  'Al-Baqarah',
+  'Aal-E-Imran',
+  'An-Nisa',
+  'Al-Ma’idah',
+  'Al-An’am',
+  'Al-A’raf',
+  'Al-Anfal',
+  'At-Tawbah',
+  'Yunus',
+  'Hud',
+  'Yusuf',
+  'Ar-Ra’d',
+  'Ibrahim',
+  'Al-Hijr',
+  'An-Nahl',
+  'Al-Isra',
+  'Al-Kahf',
+  'Maryam',
+  'Ta-Ha',
+  'Al-Anbiya',
+  'Al-Hajj',
+  'Al-Mu’minun',
+  'An-Nur',
+  'Al-Furqan',
+  'Ash-Shu’ara',
+  'An-Naml',
+  'Al-Qasas',
+  'Al-Ankabut',
+  'Ar-Rum',
+  'Luqman',
+  'As-Sajdah',
+  'Al-Ahzab',
+  'Saba',
+  'Fatir',
+  'Ya-Sin',
+  'As-Saffat',
+  'Sad',
+  'Az-Zumar',
+  'Ghafir',
+  'Fussilat',
+  'Ash-Shura',
+  'Az-Zukhruf',
+  'Ad-Dukhan',
+  'Al-Jathiyah',
+  'Al-Ahqaf',
+  'Muhammad',
+  'Al-Fath',
+  'Al-Hujurat',
+  'Qaf',
+  'Adh-Dhariyat',
+  'At-Tur',
+  'An-Najm',
+  'Al-Qamar',
+  'Ar-Rahman',
+  'Al-Waqi’ah',
+  'Al-Hadid',
+  'Al-Mujadilah',
+  'Al-Hashr',
+  'Al-Mumtahanah',
+  'As-Saff',
+  'Al-Jumu’ah',
+  'Al-Munafiqun',
+  'At-Taghabun',
+  'At-Talaq',
+  'At-Tahrim',
+  'Al-Mulk',
+  'Al-Qalam',
+  'Al-Haqqah',
+  'Al-Ma’arij',
+  'Nuh',
+  'Al-Jinn',
+  'Al-Muzzammil',
+  'Al-Muddaththir',
+  'Al-Qiyamah',
+  'Al-Insan',
+  'Al-Mursalat',
+  'An-Naba',
+  'An-Nazi’at',
+  'Abasa',
+  'At-Takwir',
+  'Al-Infitar',
+  'Al-Mutaffifin',
+  'Al-Inshiqaq',
+  'Al-Buruj',
+  'At-Tariq',
+  'Al-A’la',
+  'Al-Ghashiyah',
+  'Al-Fajr',
+  'Al-Balad',
+  'Ash-Shams',
+  'Al-Layl',
+  'Ad-Duha',
+  'Ash-Sharh',
+  'At-Tin',
+  'Al-Alaq',
+  'Al-Qadr',
+  'Al-Bayyinah',
+  'Az-Zalzalah',
+  'Al-Adiyat',
+  'Al-Qari’ah',
+  'At-Takathur',
+  'Al-Asr',
+  'Al-Humazah',
+  'Al-Fil',
+  'Quraysh',
+  'Al-Ma’un',
+  'Al-Kawthar',
+  'Al-Kafirun',
+  'An-Nasr',
+  'Al-Masad',
+  'Al-Ikhlas',
+  'Al-Falaq',
+  'An-Nas'];
+let current=0,active=0,auto=true,timer=null,progressTimer=null,qPlaying=false;
+let currentSurah=1,currentAyahIndex=0,currentVisual=0,quranAyahs=[],qAudio=document.getElementById('qAudio');
+const imgs=[document.getElementById('sceneA')];
+
+function page(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='favorites')renderFavorites();if(id==='settings')loadSettings();if(id==='home')renderDashboard();if(id==='downloads'){renderDownloadFolder();renderOfflineQuran()}scrollTo(0,0)}
+
+async function renderQuran(list=surahs){const saved=await getOfflineAll().catch(()=>[]);const savedSet=new Set(saved.map(x=>x.n));document.getElementById('surahList').innerHTML=list.map(s=>{const i=surahs.indexOf(s);const isSaved=savedSet.has(i);return `<div class="item"><h3>${i+1}. ${s}</h3><div class="muted">${i===0?'7':'Ayahs available after opening'} • Real Quran data</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button onclick="openSurah(${i})">Open Surah</button><button class="btn" onclick="downloadSurahByNumber(${i+1})">${isSaved?'✓ Offline Saved':'📥 Download'}</button></div></div>`}).join('')}
+function normalizeQuranSearch(v){return (v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’'`]/g,'').replace(/[^a-z0-9\u0980-\u09ff:\s-]/g,' ').replace(/\s+/g,' ').trim()}
+function levenshtein(a,b){
+ a=normalizeQuranSearch(a); b=normalizeQuranSearch(b);
+ const d=Array.from({length:b.length+1},(_,i)=>[i]);
+ for(let j=0;j<=a.length;j++) d[0][j]=j;
+ for(let i=1;i<=b.length;i++){
+  d[i]=[i];
+  for(let j=1;j<=a.length;j++){
+   d[i][j]=b[i-1]===a[j-1]?d[i-1][j-1]:Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+1);
+  }
+ }
+ return d[b.length][a.length];
+}
+
+function bestSurahMatch(text){const aliases={"fatiha":"Al-Fatihah","fatihah":"Al-Fatihah","al fatiha":"Al-Fatihah","baqarah":"Al-Baqarah","al baqarah":"Al-Baqarah","bakara":"Al-Baqarah","yasin":"Ya-Sin","yaseen":"Ya-Sin","ya sin":"Ya-Sin","rahman":"Ar-Rahman","ar rahman":"Ar-Rahman","mulk":"Al-Mulk","kahf":"Al-Kahf","kahaf":"Al-Kahf","ikhlas":"Al-Ikhlas","falaq":"Al-Falaq","nas":"An-Nas"};const x=normalizeQuranSearch(text);if(aliases[x])text=aliases[x];let best={i:-1,score:999};surahs.forEach((s,i)=>{const n=normalizeQuranSearch(s), t=normalizeQuranSearch(text), score=Math.min(levenshtein(n,t),levenshtein(n.replace(/^al /,''),t.replace(/^al /,'')));if(score<best.score)best={i,score}});return best}
+function filterQuran(v){const raw=(v||'').trim(),x=normalizeQuranSearch(raw);if(!x){renderQuran(surahs);return}let num=0,ayah=0,m=x.match(/^(?:surah\s*)?(\d{1,3})(?:\s*(?::|\.|\/|-|ayah|ayat)\s*(\d{1,3}))?$/i);if(m){num=Number(m[1]);ayah=m[2]?Number(m[2]):0}if(num>=1&&num<=114){renderQuran([surahs[num-1]]);if(ayah>=1)openSurah(num-1,ayah);return}const parts=x.split(/\s+(?:ayah|ayat)\s+/i);if(parts.length===2&&/^\d+$/.test(parts[1])){const hit=bestSurahMatch(parts[0].replace(/^surah\s+/i,''));if(hit.i>=0&&hit.score<=6){renderQuran([surahs[hit.i]]);openSurah(hit.i,Number(parts[1]));return}}const plain=x.match(/^(?:surah\s+)?(.+?)\s+(\d{1,3})$/i);if(plain&&!/^\d+$/.test(plain[1])){const hit=bestSurahMatch(plain[1]);if(hit.i>=0&&hit.score<=6){renderQuran([surahs[hit.i]]);openSurah(hit.i,Number(plain[2]));return}}const hit=bestSurahMatch(x);renderQuran(hit.i>=0&&hit.score<=6?[surahs[hit.i]]:surahs.filter(s=>normalizeQuranSearch(s).includes(x)))}
+async function openSurah(i,startAyah=1){
+  currentSurah=i+1;
+  currentAyahIndex=Math.max(0,(startAyah||1)-1);
+  qPlaying=false;
+  qAudio.pause();
+  document.getElementById('masterPlay').textContent='▶ Play';
+  document.getElementById('audioNow').textContent='Ready';
+  const status=document.getElementById('quranStatus');
+  if(status) status.textContent='';
+  page('player');
+  await loadSurah(currentSurah);
+  if(startAyah && quranAyahs.length){
+    const idx=Math.min(quranAyahs.length-1,startAyah-1);
+    currentAyahIndex=idx;
+    highlightAyah(idx);
+  }
+  prepareQuranAudio(currentAyahIndex);
+}
+
+async function loadSurahOriginal(n){
+  const status=document.getElementById('quranStatus');
+  const list=document.getElementById('ayahList');
+  // No visible loading/progress UI: the Quran page stays clean while data loads.
+  if(status) status.textContent='';
+  if(list) list.innerHTML='';
+  quranAyahs=[];
+  try{
+    const [arRes,bnRes]=await Promise.all([
+      fetch(`https://api.alquran.cloud/v1/surah/${n}/quran-uthmani`,{cache:'force-cache'}),
+      fetch(`https://api.alquran.cloud/v1/surah/${n}/bn.bengali`,{cache:'force-cache'})
+    ]);
+    if(!arRes.ok||!bnRes.ok) throw new Error('Quran API response error');
+    const [ar,bn]=await Promise.all([arRes.json(),bnRes.json()]);
+    if(!ar.data?.ayahs?.length) throw new Error('Quran data missing');
+    quranAyahs=ar.data.ayahs.map((a,i)=>({
+      number:a.number,
+      numberInSurah:a.numberInSurah,
+      arabic:a.text,
+      bangla:bn.data?.ayahs?.[i]?.text||'',
+      surah:a.surah,
+      audioUrl:`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${a.number}.mp3`
+    }));
+    document.getElementById('surahTitle').textContent=`${n}. ${ar.data.name||surahs[n-1]}`;
+    document.getElementById('surahInfo').textContent=`${ar.data.englishName||surahs[n-1]} • ${quranAyahs.length} Ayahs • বাংলা অনুবাদ`;
+    if(status) status.textContent='';
+    renderAyahs();
+  }catch(e){
+    console.error(e);
+    if(status) status.innerHTML=`<div class="error">Quran data load হয়নি। Internet ON আছে কিনা দেখুন।<br><button style="margin-top:10px" class="primary" onclick="loadSurah(${n})">Retry</button></div>`;
+  }
+}
+
+function renderAyahs(){
+  const el=document.getElementById('ayahList');
+  if(!el)return;
+  el.innerHTML=quranAyahs.map((a,i)=>`<article class="ayah" id="ayah-${i}"><div class="ayahTop"><div class="ayahNo">${a.numberInSurah}</div><button class="ayahPlay" onclick="playAyah(${i})">▶</button></div><div class="arabic">${a.arabic}</div><div class="bangla">${a.bangla}</div><div class="qmeta"><span>Ayah ${a.numberInSurah}</span><button style="background:none;border:0;color:#9fe0bd" onclick="favoriteAyah(${i})">☆ Favorite</button></div></article>`).join('');
+}
+
+function openAyahChooser(){
+  if(!quranAyahs.length){alert('আগে একটি Surah খুলুন।');return}
+  document.getElementById('chooserInfo').textContent=`${quranAyahs.length} Ayahs • যেকোনো নম্বরে চাপলে সেখান থেকেই Play হবে`;
+  document.getElementById('ayahChoices').innerHTML=quranAyahs.map((a,i)=>`<button class="ayahChoice ${i===currentAyahIndex?'selected':''}" onclick="chooseAyah(${i})">${a.numberInSurah}</button>`).join('');
+  document.getElementById('ayahChooser').classList.add('show');
+}
+function closeAyahChooser(){document.getElementById('ayahChooser').classList.remove('show')}
+function chooseAyah(i){currentAyahIndex=i;closeAyahChooser();playAyah(i)}
+function highlightAyah(i){
+  document.querySelectorAll('.ayah.active').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('ayah-'+i);
+  if(el)el.classList.add('active');
+  const now=document.getElementById('audioNow');
+  if(now)now.textContent=`Ayah ${quranAyahs[i]?.numberInSurah||i+1} playing`;
+}
+
+function prepareQuranAudio(i){
+  if(!quranAyahs[i]) return;
+  const a=quranAyahs[i];
+  const url=a.audioUrl||`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${a.number}.mp3`;
+  // Always keep a directly playable online source ready for a one-tap start.
+  if(!qAudio.src || qAudio.dataset.ayahIndex!==String(i)){
+    qAudio.src=url;
+    qAudio.dataset.ayahIndex=String(i);
+    qAudio.preload='auto';
+    qAudio.load();
+  }
+  // If an offline full-Surah file is already available, switch to it before the next tap.
+  getOfflineAudio('surah:'+currentSurah).then(blob=>{
+    if(blob && qAudio.paused && qAudio.dataset.ayahIndex===String(i)){
+      if(qAudio._nurObjectUrl) URL.revokeObjectURL(qAudio._nurObjectUrl);
+      qAudio._nurObjectUrl=URL.createObjectURL(blob);
+      qAudio.src=qAudio._nurObjectUrl;
+      qAudio.currentTime=0;
+      qAudio.preload='auto';
+    }
+  }).catch(()=>{});
+}
+
+function startVisualForAyah(i){
+  if(!document.getElementById('animBtn')?.classList.contains('on')) return;
+  currentVisual=i%photos.length;
+  preloadAround(currentVisual);
+  openVisual(currentVisual);
+}
+function toggleQuranVisual(){
+  const btn=document.getElementById('qVisualBtn');
+  const on=!document.getElementById('animBtn')?.classList.contains('on');
+  if(on) document.getElementById('animBtn')?.classList.add('on');
+  else document.getElementById('animBtn')?.classList.remove('on');
+  localStorage.setItem(settingKey('animBtn'),on?'1':'0');
+  btn.textContent=on?'🎬 Visual ON':'🎬 Visual OFF';
+  if(on){
+    currentVisual=currentAyahIndex%photos.length;
+    openVisual(currentVisual);
+  }else{
+    closeVisual();
+  }
+}
+
+function syncQuranVisualButton(){
+  const on=document.getElementById('animBtn')?.classList.contains('on');
+  const b=document.getElementById('qVisualBtn');
+  if(b)b.textContent=on?'🎬 Visual ON':'🎬 Visual OFF';
+}
+
+async function playAyah(i){
+  if(!quranAyahs[i]) return;
+  currentAyahIndex=i;
+  const a=quranAyahs[i];
+  const url=a.audioUrl||`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${a.number}.mp3`;
+
+  // Important: call play() in the same click task. This avoids first-tap autoplay rejection.
+  if(qAudio._nurObjectUrl) URL.revokeObjectURL(qAudio._nurObjectUrl);
+  qAudio._nurObjectUrl=null;
+  qAudio.src=url;
+  qAudio.dataset.ayahIndex=String(i);
+  qAudio.preload='auto';
+  qAudio.currentTime=0;
+
+  highlightAyah(i);
+  syncQuranVisualButton();
+  startVisualForAyah(i);
+
+  const playPromise=qAudio.play();
+  if(playPromise && typeof playPromise.then==='function'){
+    playPromise.then(()=>{
+      qPlaying=true;
+      document.getElementById('masterPlay').textContent='⏸ Pause';
+      document.getElementById('audioNow').textContent=`Ayah ${a.numberInSurah} playing`;
+      // Keep the source unchanged while playing so the first tap never restarts or jumps.
+    }).catch(()=>{
+      qPlaying=false;
+      document.getElementById('masterPlay').textContent='▶ Play';
+      document.getElementById('audioNow').textContent='Play চাপুন আবার';
+    });
+  }
+}
+
+function toggleQuranPlay(){
+  if(!quranAyahs.length){alert('আগে একটি Surah খুলুন।');return}
+  if(qAudio.paused){
+    playAyah(currentAyahIndex);
+  }else{
+    qAudio.pause();
+    qPlaying=false;
+    document.getElementById('masterPlay').textContent='▶ Play';
+    document.getElementById('audioNow').textContent='Paused';
+  }
+}
+qAudio.addEventListener('ended',()=>{
+  if(currentAyahIndex<quranAyahs.length-1){
+    currentAyahIndex++;
+    playAyah(currentAyahIndex);
+  }else{
+    qPlaying=false;
+    document.getElementById('masterPlay').textContent='▶ Play';
+    document.getElementById('audioNow').textContent='Surah finished';
+  }
+});
+
+function favoriteAyah(i){const key='nur_fav_ayahs';const arr=JSON.parse(localStorage.getItem(key)||'[]');const item={surah:currentSurah,ayah:quranAyahs[i].numberInSurah};if(!arr.some(x=>x.surah===item.surah&&x.ayah===item.ayah))arr.push(item);localStorage.setItem(key,JSON.stringify(arr));alert('⭐ Favorite saved');}
+function saveCurrentSurah(){const arr=JSON.parse(localStorage.getItem('nur_fav_surahs')||'[]');if(!arr.includes(currentSurah))arr.push(currentSurah);localStorage.setItem('nur_fav_surahs',JSON.stringify(arr));alert('⭐ Surah saved');}
+renderQuran();
+
+
+qAudio.addEventListener('timeupdate',()=>{if(qAudio.duration){document.getElementById('audioNext').textContent=`${Math.floor(qAudio.currentTime)}s / ${Math.floor(qAudio.duration)}s`}});
+const hadithBooks=[
+ {key:'bukhari',name:'Sahih al-Bukhari',bn:'সহিহ বুখারি'},
+ {key:'muslim',name:'Sahih Muslim',bn:'সহিহ মুসলিম'},
+ {key:'abudawud',name:'Sunan Abu Dawud',bn:'সুনান আবু দাউদ'},
+ {key:'tirmidhi',name:'Jami’ at-Tirmidhi',bn:'জামে তিরমিজি'},
+ {key:'nasai',name:'Sunan an-Nasa’i',bn:'সুনান নাসাঈ'},
+ {key:'ibnmajah',name:'Sunan Ibn Majah',bn:'সুনান ইবনে মাজাহ'}
+];
+let hadithCache={}; let currentHadithBook=null;
+const hadithCDN='https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/';
+function escHadith(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function renderHadith(list=hadithBooks){document.getElementById('hadithList').innerHTML=list.map(b=>`<div class="item"><h3>📚 ${b.name}</h3><div class="muted">${b.bn} • Arabic + বাংলা</div><button style="margin-top:9px" class="primary" onclick="openHadithBook('${b.key}')">Open Book</button></div>`).join('')}
+function filterHadith(v){const x=(v||'').trim().toLowerCase();if(!x){renderHadith();return}const m=x.match(/^(?:bukhari|muslim|abu dawud|abudawud|tirmidhi|nasai|nasa'i|ibn majah|ibnmajah)\s+(\d+)$/);if(m){const aliases={'bukhari':'bukhari','muslim':'muslim','abu dawud':'abudawud','abudawud':'abudawud','tirmidhi':'tirmidhi','nasai':'nasai',"nasa'i":'nasai','ibn majah':'ibnmajah','ibnmajah':'ibnmajah'};const k=Object.keys(aliases).find(a=>x.startsWith(a+' '));if(k){openHadithBook(aliases[k],Number(m[1]));return}}const hits=hadithBooks.filter(b=>(b.name+' '+b.bn).toLowerCase().includes(x)||b.key.includes(x));renderHadith(hits.length?hits:hadithBooks)}
+async function fetchHadithBook(bookKey){if(hadithCache[bookKey])return hadithCache[bookKey];const [arRes,bnRes]=await Promise.all([fetch(`${hadithCDN}ara-${bookKey}.json`),fetch(`${hadithCDN}ben-${bookKey}.json`)]);if(!arRes.ok||!bnRes.ok)throw new Error('Hadith data download failed');const [ar,bn]=await Promise.all([arRes.json(),bnRes.json()]);const arrA=ar.hadiths||[],arrB=bn.hadiths||[];const byId=new Map(arrB.map(h=>[String(h.hadithnumber??h.idInBook??h.id),h]));const merged=arrA.map((a,i)=>{const id=String(a.hadithnumber??a.idInBook??a.id);const b=byId.get(id)||arrB[i]||{};return {id:id,num:a.hadithnumber??a.idInBook??a.id,arabic:a.text||a.hadithArabic||'',bangla:b.text||b.hadithBangla||b.hadith||'',chapter:(a.chapter?.[0]?.name)||a.chapter?.name||''}});hadithCache[bookKey]={meta:ar.metadata||bn.metadata||{},items:merged};return hadithCache[bookKey]}
+async function openHadithBook(bookKey,focusNum){const book=hadithBooks.find(b=>b.key===bookKey);currentHadithBook=bookKey;document.getElementById('hadithReader').classList.add('show');document.getElementById('hadithReaderTitle').textContent=book?book.name:'Hadith';document.getElementById('hadithReaderInfo').textContent='Hadith data loading…';document.getElementById('hadithReaderBody').innerHTML='<div class="loader">📚 Arabic + বাংলা Hadith loading…</div>';try{const data=await fetchHadithBook(bookKey);document.getElementById('hadithReaderInfo').textContent=`${data.items.length} Hadith • Search by number or text`;document.getElementById('hadithReaderBody').innerHTML=`<input id="bookHadithSearch" class="search" placeholder="Hadith number or keyword" oninput="searchInsideHadith()"><div id="bookHadithResults"></div>`;window.__hadithItems=data.items;renderHadithResults(focusNum?data.items.filter(h=>Number(h.num)===focusNum):data.items.slice(0,30));if(focusNum&&!document.getElementById('bookHadithResults').innerHTML.includes('Hadith not found')){setTimeout(()=>document.getElementById('bookHadithResults')?.scrollIntoView({behavior:'smooth',block:'start'}),50)}}catch(e){document.getElementById('hadithReaderInfo').textContent='Error';document.getElementById('hadithReaderBody').innerHTML='<div class="error">Hadith data load হয়নি। Internet ON আছে কিনা দেখুন, তারপর বইটি আবার Open করুন।</div>'}}
+function renderHadithResults(items){const box=document.getElementById('bookHadithResults');if(!items.length){box.innerHTML='<div class="error">এই search অনুযায়ী Hadith পাওয়া যায়নি।</div>';return}box.innerHTML=items.map(h=>`<article class="ayah"><div class="qmeta"><b>Hadith ${escHadith(h.num)}</b><button style="background:none;border:0;color:#9fe0bd" onclick="favoriteHadith('${escHadith(currentHadithBook)}',${Number(h.num)||0})">☆ Favorite</button></div>${h.chapter?`<div class="muted" style="margin-top:8px">${escHadith(h.chapter)}</div>`:''}<div class="arabic" style="font-size:25px">${escHadith(h.arabic)}</div><div class="bangla">${escHadith(h.bangla)}</div><div class="qmeta" style="margin-top:10px"><span>${escHadith(h.num)}</span><button class="btns" style="border:1px solid #2b5a42;background:#0b2417;color:#fff;border-radius:10px;padding:7px 10px" onclick="shareHadith(${Number(h.num)||0})">Share</button></div></article>`).join('')}
+function searchInsideHadith(){const q=(document.getElementById('bookHadithSearch')?.value||'').trim().toLowerCase();if(!window.__hadithItems)return;if(!q){renderHadithResults(window.__hadithItems.slice(0,30));return}const exact=window.__hadithItems.filter(h=>String(h.num)===q);if(exact.length){renderHadithResults(exact);return}const res=window.__hadithItems.filter(h=>(String(h.num)+' '+h.arabic+' '+h.bangla).toLowerCase().includes(q)).slice(0,50);renderHadithResults(res)}
+function closeHadithReader(){document.getElementById('hadithReader').classList.remove('show')}
+function favoriteHadith(book,num){const key='nur_fav_hadiths';const arr=JSON.parse(localStorage.getItem(key)||'[]');if(!arr.some(x=>x.book===book&&x.num===num)){arr.push({book,num});localStorage.setItem(key,JSON.stringify(arr));alert('⭐ Hadith saved')}else alert('Already in favorites')}
+function shareHadith(num){const text=document.querySelector('#bookHadithResults .ayah .bangla')?.innerText||'';if(navigator.share)navigator.share({title:'NUR BY SAJIT Hadith',text:'Hadith '+num+'\n'+text}).catch(()=>{});else navigator.clipboard?.writeText(text).then(()=>alert('Hadith copied'))}
+renderHadith();
+
+let z=Number(localStorage.getItem('nurJikirCount')||0), jTarget=Number(localStorage.getItem('nurJikirTarget')||33), jName=localStorage.getItem('nurJikirName')||'SUBHANALLAH';
+function saveJikir(){localStorage.setItem('nurJikirCount',z);localStorage.setItem('nurJikirTarget',jTarget);localStorage.setItem('nurJikirName',jName)}
+function updateJikir(){document.getElementById('count').textContent=z;document.getElementById('dhikrLabel').textContent=jName;document.getElementById('dhikrProgress').textContent=z+' / '+jTarget+(z>=jTarget?' • Target complete ✓':'');saveJikir()}
+function countTap(){z++;if(navigator.vibrate)navigator.vibrate(20);updateJikir()}
+function resetCount(){z=0;updateJikir()}
+function undoCount(){if(z>0)z--;updateJikir()}
+function changeDhikr(){jName=document.getElementById('dhikrSelect').value;z=0;updateJikir()}
+function changeTarget(){jTarget=Number(document.getElementById('targetSelect').value);updateJikir()}
+function initJikir(){document.getElementById('dhikrSelect').value=jName;document.getElementById('targetSelect').value=String(jTarget);updateJikir()}
+initJikir();
+const AI_BACKEND_ENDPOINT=''; // Set only to your secure backend URL later. Never put an AI API key in this HTML.
+function escAI(v){return (v||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function addAIMessage(q,answer,ref){
+  const chat=document.getElementById('aiChat');
+  chat.insertAdjacentHTML('beforeend',`<div class="aiBubble user"><b>You</b><p>${escAI(q)}</p></div><div class="aiBubble bot"><b>🤖 NUR AI</b><p>${answer}</p>${ref?`<div class="aiRef">📚 Reference: ${escAI(ref)}</div>`:''}</div>`);
+  chat.lastElementChild.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function localAIAnswer(q){
+  const x=q.toLowerCase();
+  if(x.includes('ayatul kursi')||x.includes('আয়াতুল কুরসি')||x.includes('আয়াতুল কুরসি'))
+    return ['আয়াতুল কুরসি হলো সূরা আল-বাকারা-এর ২৫৫ নম্বর আয়াত।','Qur’an 2:255'];
+  if(x.includes('ওযুর ফরজ')||x.includes('ওযু')&&x.includes('ফরজ'))
+    return ['ওযুর ফরজের সংখ্যা মাযহাবভেদে ভিন্নভাবে বর্ণিত হয়। আপনার অনুসৃত মাযহাব অনুযায়ী নির্ভরযোগ্য আলেমের ব্যাখ্যা দেখুন।','See a qualified scholar for madhhab-specific fiqh'];
+  if(x.includes('সবর')||x.includes('sabr'))
+    return ['সবর ও সালাতের মাধ্যমে সাহায্য চাওয়ার শিক্ষা কুরআনে এসেছে।','Qur’an 2:153'];
+  if(x.includes('সদকা')||x.includes('sadaqah'))
+    return ['সদকা সম্পর্কে বহু সহিহ হাদিস রয়েছে। নির্দিষ্ট হাদিস নম্বর চাইলে বই ও নম্বর লিখুন, যেমন “Bukhari 550”.','Hadith reference available through the Hadith section'];
+  return ['আপনার প্রশ্নটি পেয়েছি। এই HTML prototype-এ এখন নিরাপদ local guidance + reference demo চলছে। আসল NUR AI-কে secure backend-এর সাথে যুক্ত করার ধাপটি পরের integration-এ হবে। API key এই HTML-এ রাখা হবে না।','NUR AI secure-backend architecture'];
+}
+async function askAI(){
+  const input=document.getElementById('aiInput'),q=input.value.trim();if(!q)return;
+  input.value='';
+  if(AI_BACKEND_ENDPOINT){
+    try{
+      const r=await fetch(AI_BACKEND_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})});
+      const d=await r.json();
+      addAIMessage(q,escAI(d.answer||'No answer returned.'),d.reference||'');
+      return;
+    }catch(e){}
+  }
+  const [a,ref]=localAIAnswer(q);
+  addAIMessage(q,escAI(a),ref);
+}
+function aiAskQuick(q){document.getElementById('aiInput').value=q;askAI();}
+function clearAI(){document.getElementById('aiChat').innerHTML='<div class="aiBubble bot"><b>🤖 NUR AI</b><p>আসসালামু আলাইকুম। আপনার ইসলামিক প্রশ্ন লিখুন।</p></div>';}
+
+
+// Remove unwanted people/female-oriented sources from the visual collection.
+// Text matching alone cannot identify people inside an external photo, so known
+// people/team sources are also blocked explicitly.
+const BLOCKED_VISUAL_TERMS=['woman','women','girl','female','lady','portrait','model','person','people','cat','kitten'];
+const BLOCKED_VISUAL_IDS=[
+  'photo-1521737604893-d14cc237f11d', // office/team photo
+  'photo-1512203608426-ccf62b5bacd0',
+  'photo-1512187256255-409199cd3521',
+  'photo-1512204150185-ec347ed39ef3'
+];
+const filteredPhotos=photos.filter(u=>{
+  const s=u.toLowerCase();
+  return !BLOCKED_VISUAL_TERMS.some(t=>s.includes(t)) &&
+         !BLOCKED_VISUAL_IDS.some(id=>s.includes(id));
+});
+if(filteredPhotos.length) photos.splice(0,photos.length,...filteredPhotos);
+
+function buildVisuals(){document.getElementById('visualGrid').innerHTML=photos.map((p,i)=>`<div class="vcard" onclick="openVisual(${i})"><img loading="eager" decoding="sync" fetchpriority="high" src="${p}" alt="Visual ${i+1}"><div><b>${i+1}</b></div></div>`).join('')}
+buildVisuals();
+
+/* NUR VISUAL ENGINE — dual-layer, preloaded, no-black crossfade + smooth zoom */
+const visualCache=new Map();
+let visualLoadToken=0;
+let visualLayer='sceneA';
+function preloadVisual(i){
+  i=(i+photos.length)%photos.length;
+  if(visualCache.has(i)) return visualCache.get(i);
+  const im=new Image();
+  im.decoding='async';
+  im.loading='eager';
+  im.src=photos[i];
+  visualCache.set(i,im);
+  return im;
+}
+function preloadAround(i){
+  for(let k=0;k<=6;k++) preloadVisual(i+k);
+  for(let k=1;k<=2;k++) preloadVisual(i-k);
+}
+for(let k=0;k<8;k++) preloadVisual(k);
+
+function setLayerImage(layer,idx){
+  const img=document.getElementById(layer);
+  const src=photos[idx];
+  img.alt='Visual '+(idx+1);
+  img.src=src;
+  img.dataset.visualIndex=String(idx);
+  img.classList.remove('show','zin');
+  img.style.animation='none';
+  img.style.transform='scale(1.02)';
+  void img.offsetWidth;
+  img.classList.add('show','zin');
+  return img;
+}
+function showVisualImage(idx){
+  idx=(idx+photos.length)%photos.length;
+  const token=++visualLoadToken;
+  const active=document.getElementById(visualLayer);
+  const nextLayer=visualLayer==='sceneA'?'sceneB':'sceneA';
+  const next=document.getElementById(nextLayer);
+  const src=photos[idx];
+  const ready=visualCache.get(idx);
+
+  const apply=()=>{
+    if(token!==visualLoadToken) return;
+    // Keep the current frame visible until the next frame is fully decoded.
+    next.onload=null;
+    next.onerror=null;
+    next.src=src;
+    next.alt='Visual '+(idx+1);
+    next.dataset.visualIndex=String(idx);
+    next.classList.remove('show','zin');
+    next.style.animation='none';
+    next.style.transform='scale(1.02)';
+    next.style.opacity='0';
+    next.classList.add('nextLayer');
+    void next.offsetWidth;
+    next.classList.add('show','zin');
+
+    // Crossfade: old frame remains underneath, so there is never a black gap.
+    active.classList.remove('nextLayer');
+    active.classList.add('activeLayer');
+    setTimeout(()=>{
+      if(token!==visualLoadToken) return;
+      active.classList.remove('show','zin','activeLayer');
+      active.style.opacity='0';
+      next.classList.remove('nextLayer');
+      next.classList.add('activeLayer');
+      visualLayer=nextLayer;
+    },900);
+
+    document.getElementById('vname').textContent=String(idx+1);
+    preloadAround(idx);
+  };
+
+  if(ready && ready.complete && ready.naturalWidth>0){
+    apply();
+  }else{
+    const tmp=new Image();
+    tmp.decoding='async';
+    tmp.onload=()=>apply();
+    tmp.onerror=()=>{ if(token===visualLoadToken){ /* keep old frame; retry later */ preloadVisual(idx); } };
+    tmp.src=src;
+  }
+}
+function loadVisual(){showVisualImage(current);}
+function openVisual(i){
+  current=(i+photos.length)%photos.length;
+  const v=document.getElementById('viewer');
+  const rain=document.getElementById('rain');
+  rain.classList.toggle('on',localStorage.getItem('nur_visual_rain')==='1');
+  syncRainButton();
+  v.classList.add('show');
+  preloadAround(current);
+  showVisualImage(current);
+  startVisualAuto();
+  requestViewerFullscreen();
+}
+function requestViewerFullscreen(){try{const v=document.getElementById('viewer');if(document.fullscreenEnabled&&!document.fullscreenElement)v.requestFullscreen?.().catch(()=>{});}catch(e){}}
+function toggleVisualFullscreen(){try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});else requestViewerFullscreen();}catch(e){}}
+function closeVisual(){
+  document.getElementById('viewer').classList.remove('show');
+  clearTimeout(timer); clearInterval(progressTimer);
+  ['sceneA','sceneB'].forEach(id=>{
+    const img=document.getElementById(id);
+    img.classList.remove('show','zin','activeLayer','nextLayer');
+    img.style.opacity='0';
+  });
+  visualLoadToken++;
+  try{if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});}catch(e){}
+}
+function nextVisual(){current=(current+1)%photos.length;showVisualImage(current);if(auto)startVisualAuto();}
+function prevVisual(){current=(current-1+photos.length)%photos.length;showVisualImage(current);if(auto)startVisualAuto();}
+function startVisualAuto(){
+  clearTimeout(timer); clearInterval(progressTimer);
+  if(!auto){document.getElementById('autoVisual').textContent='▶ Resume Auto';return;}
+  document.getElementById('autoVisual').textContent='⏸ Stop Auto';
+  document.getElementById('prog').style.width='0%';
+  const started=performance.now();
+  progressTimer=setInterval(()=>{document.getElementById('prog').style.width=Math.min(100,(performance.now()-started)/3000*100)+'%';},50);
+  timer=setTimeout(()=>{
+    if(!auto||!document.getElementById('viewer').classList.contains('show'))return;
+    current=(current+1)%photos.length;
+    showVisualImage(current);
+    startVisualAuto();
+  },3000);
+}
+function toggleAuto(){auto=!auto;localStorage.setItem('nur_visual_auto',auto?'1':'0');if(auto)startVisualAuto();else{clearTimeout(timer);clearInterval(progressTimer);document.getElementById('autoVisual').textContent='▶ Resume Auto';document.getElementById('prog').style.width='100%';}}
+auto=localStorage.getItem('nur_visual_auto')!=='0';
+
+function syncRainButton(){
+  const on=localStorage.getItem('nur_visual_rain')==='1';
+  const b=document.querySelector('.vbottom button[onclick="rainEffect()"]');
+  if(b)b.textContent=on?'🌧 Rain ON':'🌧 Rain';
+}
+function rainEffect(){
+  const r=document.getElementById('rain');
+  const on=!r.classList.contains('on');
+  r.classList.toggle('on',on);
+  localStorage.setItem('nur_visual_rain',on?'1':'0');
+  syncRainButton();
+}
+const rainLayer=document.getElementById('rain');
+for(let i=0;i<230;i++){
+  const d=document.createElement('i');
+  d.className='drop'+(Math.random()>.78?' fast':'');
+  d.style.left=Math.random()*110-5+'%';
+  d.style.setProperty('--h',(38+Math.random()*105)+'px');
+  d.style.setProperty('--w',(Math.random()>.90?2:Math.random()>.82?1.5:1)+'px');
+  d.style.setProperty('--blur',(Math.random()>.82?'0px':(0.12+Math.random()*.42).toFixed(2)+'px'));
+  d.style.setProperty('--slant',(8+Math.random()*8).toFixed(1)+'deg');
+  d.style.setProperty('--wind',(18+Math.random()*55).toFixed(0)+'px');
+  d.style.setProperty('--dur',(0.48+Math.random()*.85).toFixed(2)+'s');
+  d.style.animationDelay=(-Math.random()*2.4).toFixed(2)+'s';
+  d.style.opacity=(.22+Math.random()*.65).toFixed(2);
+  rainLayer.appendChild(d);
+}
+rainLayer.classList.toggle('on',localStorage.getItem('nur_visual_rain')==='1');
+syncRainButton();
+function settingKey(id){return 'nur_setting_'+id;}
+function toggleSetting(id){const b=document.getElementById(id);b.classList.toggle('on');localStorage.setItem(settingKey(id),b.classList.contains('on')?'1':'0')}
+function saveRangeSetting(id){localStorage.setItem(settingKey(id),document.getElementById(id).value)}
+function saveSelectSetting(id){localStorage.setItem(settingKey(id),document.getElementById(id).value)}
+function loadSettings(){['animBtn','azanBtn','autoBtn','nextBtn','notifBtn'].forEach(id=>{const v=localStorage.getItem(settingKey(id));if(v==='0')document.getElementById(id)?.classList.remove('on');else document.getElementById(id)?.classList.add('on')});['defaultVol','sleepTimer','langSetting'].forEach(id=>{const v=localStorage.getItem(settingKey(id));if(v!==null&&document.getElementById(id))document.getElementById(id).value=v});syncQuranVisualButton()}
+function resetSettings(){if(!confirm('সব Settings default-এ ফেরত নেবেন?'))return;['animBtn','azanBtn','autoBtn','nextBtn','notifBtn','defaultVol','sleepTimer','langSetting'].forEach(id=>localStorage.removeItem(settingKey(id)));loadSettings();alert('✅ Settings reset হয়েছে')}
+function renderFavorites(){const box=document.getElementById('favContent');if(!box)return;const a=JSON.parse(localStorage.getItem('nur_fav_ayahs')||'[]'),s=JSON.parse(localStorage.getItem('nur_fav_surahs')||'[]'),h=JSON.parse(localStorage.getItem('nur_fav_hadiths')||'[]');let html='';html+='<div class="card"><h3>📖 Saved Ayahs</h3>'+ (a.length?a.map(x=>`<div class="row"><span>Surah ${x.surah} • Ayah ${x.ayah}</span><button class="btn" onclick="page('quran');openSurah(${Number(x.surah)},${Number(x.ayah)})">Open</button></div>`).join(''):'<div class="muted">কোনো Ayah save করা হয়নি।</div>')+'</div>';html+='<div class="card"><h3>📚 Saved Hadith</h3>'+ (h.length?h.map(x=>`<div class="row"><span>${x.book} • Hadith ${x.num}</span><button class="btn" onclick="page('hadith')">Open</button></div>`).join(''):'<div class="muted">কোনো Hadith save করা হয়নি।</div>')+'</div>';html+='<div class="card"><h3>⭐ Saved Surahs</h3>'+ (s.length?s.map(x=>`<div class="row"><span>Surah ${x}</span><button class="btn" onclick="page('quran');openSurah(${Number(x)},1)">Open</button></div>`).join(''):'<div class="muted">কোনো Surah save করা হয়নি।</div>')+'</div>';box.innerHTML=html}
+
+
+
+/* NUR offline Quran — IndexedDB with dedicated Downloads folder + progress */
+const NUR_OFFLINE_DB='NUR_BY_SAJIT_QURAN_OFFLINE_V4';
+let nurOfflineDB=null;
+function initOfflineDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open(NUR_OFFLINE_DB,3);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('surahs'))db.createObjectStore('surahs',{keyPath:'n'});if(!db.objectStoreNames.contains('audio'))db.createObjectStore('audio',{keyPath:'key'});};r.onsuccess=()=>{nurOfflineDB=r.result;resolve(r.result)};r.onerror=()=>reject(r.error)})}
+async function saveOfflineSurah(n,data){const db=nurOfflineDB||await initOfflineDB();return new Promise((res,rej)=>{const tx=db.transaction('surahs','readwrite');tx.objectStore('surahs').put({n,data,savedAt:Date.now()});tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+async function getOfflineSurah(n){try{const db=nurOfflineDB||await initOfflineDB();return await new Promise((res,rej)=>{const r=db.transaction('surahs').objectStore('surahs').get(n);r.onsuccess=()=>res(r.result?.data||null);r.onerror=()=>rej(r.error)})}catch(e){return null}}
+async function getOfflineAll(){const db=nurOfflineDB||await initOfflineDB();return new Promise((res,rej)=>{const r=db.transaction('surahs').objectStore('surahs').getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
+async function saveOfflineAudio(key,blob){const db=nurOfflineDB||await initOfflineDB();return new Promise((res,rej)=>{const tx=db.transaction('audio','readwrite');tx.objectStore('audio').put({key,blob,savedAt:Date.now()});tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+async function getOfflineAudio(key){try{const db=nurOfflineDB||await initOfflineDB();return await new Promise((res,rej)=>{const r=db.transaction('audio').objectStore('audio').get(key);r.onsuccess=()=>res(r.result?.blob||null);r.onerror=()=>rej(r.error)})}catch(e){return null}}
+async function deleteOfflineAudio(key){const db=nurOfflineDB||await initOfflineDB();return new Promise((res,rej)=>{const tx=db.transaction('audio','readwrite');tx.objectStore('audio').delete(key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+async function deleteOfflineSurah(n){const db=nurOfflineDB||await initOfflineDB();return new Promise((res,rej)=>{const tx=db.transaction('surahs','readwrite');tx.objectStore('surahs').delete(n);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+function setDownloadProgress(n,pct,text){const status=document.getElementById('quranStatus');if(!status)return;status.innerHTML=`<div class="downloadProgress"><div class="downloadPct">📥 ${text||'Downloading'} — ${Math.round(pct)}%</div><div class="downloadTrack"><div class="downloadFill" style="width:${Math.max(0,Math.min(100,pct))}%"></div></div></div>`}
+async function fetchBlobWithProgress(url,onProgress){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('Audio server response '+r.status);if(!r.body){const b=await r.blob();onProgress?.(100);return b}const total=Number(r.headers.get('content-length'))||0,reader=r.body.getReader();let loaded=0;const chunks=[];while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);loaded+=value.byteLength;if(total)onProgress?.(loaded/total*100)}const blob=new Blob(chunks,{type:r.headers.get('content-type')||'audio/mpeg'});onProgress?.(100);return blob}
+function renderOfflineQuran(){const el=document.getElementById('offlineQuranList');if(!el)return;getOfflineAll().then(items=>{el.innerHTML=items.length?items.sort((a,b)=>a.n-b.n).map(x=>`<div class="row"><span>📖 ${surahs[x.n]||'Surah '+(x.n+1)} • Offline ready</span><span style="display:flex;gap:6px"><button onclick="openSurah(${x.n},1)">Open</button><button onclick="page('downloads')">📥 Folder</button></span></div>`).join(''):'<div class="muted">এখনও কোনো Surah offline download করা হয়নি।</div>'}).catch(()=>{el.innerHTML='<div class="muted">Offline folder load করা যাচ্ছে না। আবার app খুলুন।</div>'});renderDownloadFolder()}
+async function renderDownloadFolder(){const el=document.getElementById('downloadFolderList');if(!el)return;try{const items=await getOfflineAll();const homeCount=document.getElementById('homeDownloadCount');if(homeCount)homeCount.textContent=`${items.length} Surah saved`;el.innerHTML=items.length?items.sort((a,b)=>a.n-b.n).map(x=>`<div class="downloadFile"><b>📖 ${surahs[x.n]||'Surah '+(x.n+1)}</b><div class="muted">Arabic + বাংলা + Offline Audio</div><div class="downloadBtns"><button class="primary" onclick="openSurah(${x.n},1)">▶ Open & Listen</button><button class="qtools button" onclick="removeOffline(${x.n})">🗑 Delete</button></div></div>`).join(''):'<div class="muted">📥 এখনো কোনো Surah download করা হয়নি। Quran থেকে Download চাপুন।</div>'}catch(e){el.innerHTML='<div class="error">Offline Downloads folder load করা যায়নি।</div>'}}
+async function removeOffline(n){await deleteOfflineSurah(n);await deleteOfflineAudio('surah:'+String(n+1));renderOfflineQuran();renderDownloadFolder();renderQuran();if(typeof toast==='function')toast('Offline Surah removed')}
+async function downloadSurahByNumber(n){
+ if(!n)return; const status=document.getElementById('quranStatus');
+ try{await initOfflineDB();let data=await getOfflineSurah(n-1);
+  if(!data){setDownloadProgress(n,5,`Surah ${n} data`);const [arRes,bnRes]=await Promise.all([fetch(`https://api.alquran.cloud/v1/surah/${n}/quran-uthmani`),fetch(`https://api.alquran.cloud/v1/surah/${n}/bn.bengali`)]);if(!arRes.ok||!bnRes.ok)throw new Error('Quran data download failed');const ar=await arRes.json(),bn=await bnRes.json();const ayahs=ar.data.ayahs.map((a,i)=>({number:a.number,numberInSurah:a.numberInSurah,arabic:a.text,bangla:bn.data.ayahs[i]?.text||'',surah:a.surah}));data={number:n,name:ar.data.name,englishName:ar.data.englishName,ayahs};await saveOfflineSurah(n-1,data)}
+  setDownloadProgress(n,10,`Surah ${n} audio প্রস্তুত হচ্ছে`);
+  const audioKey='surah:'+n;let blob=await getOfflineAudio(audioKey);
+  if(!blob){
+    /* One full-Surah file is stored locally. This is more reliable than downloading dozens of separate ayah files. */
+    const audioUrl=`https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${n}.mp3`;
+    blob=await fetchBlobWithProgress(audioUrl,p=>setDownloadProgress(n,10+(p*.88),`Surah ${n} audio download`));
+    if(!blob||blob.size<1000)throw new Error('Audio file পাওয়া যায়নি');
+    await saveOfflineAudio(audioKey,blob);
+  }else setDownloadProgress(n,98,`Surah ${n} audio already saved`);
+  await saveOfflineSurah(n-1,data);setDownloadProgress(n,100,`Surah ${n} complete`);renderOfflineQuran();renderDownloadFolder();renderQuran();if(typeof toast==='function')toast(`📥 ${surahs[n-1]} Downloads folder-এ save হয়েছে ✓`);setTimeout(()=>{if(status)status.textContent='';},900);
+ }catch(e){console.error(e);if(status)status.innerHTML=`<div class="error">Download হয়নি। Internet ON রেখে আবার চেষ্টা করুন।<br><small>${e.message||'Audio download error'}</small><br><button style="margin-top:10px" onclick="downloadSurahByNumber(${n})">Retry Download</button></div>`}}
+async function downloadCurrentSurah(){if(!currentSurah)return;await downloadSurahByNumber(currentSurah)}
+async function tryOfflineSurah(n){return await getOfflineSurah(n)}
+function installOfflineHooks(){renderRecent();renderOfflineQuran();renderQuran();renderDownloadFolder()} setTimeout(installOfflineHooks,500);
+async function loadSurah(n){const offline=await tryOfflineSurah(n-1);if(offline){currentSurah=n;quranAyahs=offline.ayahs||[];document.getElementById('surahTitle').textContent=`${n}. ${offline.name||surahs[n-1]}`;document.getElementById('surahInfo').textContent=`${offline.englishName||surahs[n-1]} • ${quranAyahs.length} Ayahs • Offline ready`;document.getElementById('quranStatus').textContent='';renderAyahs();prepareQuranAudio(currentAyahIndex);syncQuranVisualButton();addRecent('quran',`Surah ${n}`,`page('quran');openSurah(${n-1},1)`);return}await loadSurahOriginal(n);addRecent('quran',`Surah ${n}`,`page('quran');openSurah(${n-1},1)`)}
+</script>
+
+<script>
+/* NUR AI — Islamic-focused assistant layer
+   Production note: connect sendNURMessage() to a secure backend/LLM endpoint.
+   Never place a private AI API key in this HTML/APK.
+*/
+(function(){
+  const oldSend = window.sendNURMessage;
+  const box = document.querySelector('#chatInput, textarea[placeholder*="প্রশ্ন"], textarea');
+  const chat = document.querySelector('#chatMessages, .chatMessages, #messages');
+
+  function islamicReply(q){
+    const x=(q||'').toLowerCase().trim();
+    if(!x) return "আপনার ইসলামিক প্রশ্ন বা দৈনন্দিন ঘটনার কথা লিখুন। আমি ইসলামের দৃষ্টিকোণ থেকে সাহায্য করার চেষ্টা করব।";
+    const off = ["javascript","python","html code","css code","programming","football","movie","song","game cheat","crack","hack"];
+    if(off.some(k=>x.includes(k))) return "আমি NUR AI—একটি Islamic-focused assistant। এই বিষয়টি ইসলামের সঙ্গে সম্পর্কিত নয়, তাই এ বিষয়ে উত্তর না দিয়ে আমি Quran, Hadith, Dua, Salah, Akhlaq, Halal/Haram এবং ইসলামের আলোকে দৈনন্দিন জীবনের প্রশ্নে সাহায্য করতে পারি।";
+    if(x.includes("রাগ")||x.includes("ঝগ")||x.includes("বন্ধু")) return "ইসলামের দৃষ্টিতে রাগ সংযত করা এবং সম্পর্ক ঠিক করার চেষ্টা করা উত্তম। শান্ত হয়ে কথা বলুন, ভুল হলে ক্ষমা চান এবং অন্যজনের হক নষ্ট না করার চেষ্টা করুন। আল্লাহ ক্ষমাশীলতা ও উত্তম চরিত্র পছন্দ করেন। নির্দিষ্ট ফিকহি সিদ্ধান্তের ক্ষেত্রে আলেমের পরামর্শ নিন।";
+    if(x.includes("নামাজ")||x.includes("সালাত")) return "নামাজ ইসলামের অত্যন্ত গুরুত্বপূর্ণ ইবাদত। সময়মতো সালাত আদায় করার চেষ্টা করুন। কোনো নির্দিষ্ট মাসআলা জানতে চাইলে প্রশ্নটি বিস্তারিত লিখুন—আমি প্রাসঙ্গিক Quran/Hadith reference দেওয়ার চেষ্টা করব।";
+    if(x.includes("রোজ")||x.includes("সাওম")||x.includes("রমজান")) return "রোজা ইসলামের গুরুত্বপূর্ণ ইবাদত। আপনার প্রশ্নটি একটু বিস্তারিত লিখুন—যেমন ভাঙবে কি না, কাযা, সফর, অসুস্থতা ইত্যাদি—তাহলে বিষয়টি আলাদা করে ব্যাখ্যা করা যাবে।";
+    if(x.includes("হারাম")||x.includes("হালাল")) return "হালাল-হারামের বিষয়ে অনুমান করে সিদ্ধান্ত দেওয়া ঠিক নয়। বিষয়টি কী, বিস্তারিত লিখুন। আমি প্রাসঙ্গিক Quran/Hadith বা স্বীকৃত ফিকহি মতের ভিত্তিতে উত্তর দেওয়ার চেষ্টা করব এবং মতভেদ থাকলে তা পরিষ্কার করব।";
+    return "আপনার কথাটা বুঝেছি। 🌙 আমি NUR AI—শুধু Islamic-focused assistant। প্রশ্নটি যদি ইসলামের সঙ্গে সম্পর্কিত হয়, বিস্তারিতভাবে লিখুন। আমি Quran, Hadith ও স্বীকৃত Islamic knowledge-এর আলোকে উত্তর দেওয়ার চেষ্টা করব। নিশ্চিত না হলে অনুমান করে বলব না এবং প্রয়োজন হলে নির্ভরযোগ্য আলেম/উৎসের পরামর্শ দেব।";
+  }
+
+  window.NURIslamicReply = islamicReply;
+  window.NUR_AI_SCOPE = "Islamic only";
+
+  // Expose a clean handler for future secure backend integration.
+  window.sendNURIslamicMessage = async function(question){
+    return islamicReply(question);
+  };
+
+  // If the previous demo has a send function, keep it available but make scope clear.
+  if(typeof oldSend === "function"){
+    window.sendNURMessage = function(){
+      try { return oldSend.apply(this, arguments); } catch(e) {}
+    };
+  }
+
+  // Add a small scope badge when a header exists.
+  const headers = document.querySelectorAll("h1,h2,.brand,.logo");
+  headers.forEach(h=>{
+    if(/NUR AI/i.test(h.textContent||"") && !h.parentElement.querySelector(".nur-scope-badge")){
+      const b=document.createElement("div");
+      b.className="nur-scope-badge";
+      b.textContent="☪ Islamic Focus • Quran • Hadith • Dua • Salah";
+      b.style.cssText="font-size:11px;opacity:.75;margin-top:4px";
+      h.parentElement.appendChild(b);
+    }
+  });
+})();
+</script>
+
+
+<script id="nur-prayer-qibla-final">
+(function(){
+  const prayerLocation=document.getElementById('prayerLocation');
+  const prayerTimes=document.getElementById('prayerTimes');
+  const nextPrayer=document.getElementById('nextPrayer');
+  const countdownEl=document.getElementById('prayerCountdown');
+  const qNeedle=document.getElementById('qiblaNeedle');
+  const qDegree=document.getElementById('qiblaDegree');
+  const qStatus=document.getElementById('qiblaStatus');
+  let userLat=null,userLon=null,timings=null, countdownTimer=null, compassOn=false;
+  let azanOn=localStorage.getItem('nurPrayerAzan')!=='off';
+
+  window.togglePrayerAzan=function(){
+    azanOn=!azanOn;
+    localStorage.setItem('nurPrayerAzan',azanOn?'on':'off');
+    const b=document.getElementById('prayerAzanToggle');
+    if(b)b.textContent='🔔 Azan '+(azanOn?'ON':'OFF');
+  };
+  const ab=document.getElementById('prayerAzanToggle'); if(ab)ab.textContent='🔔 Azan '+(azanOn?'ON':'OFF');
+
+  function fmt12(v){
+    if(!v)return '—'; const m=String(v).match(/^(\d{1,2}):(\d{2})/); if(!m)return v;
+    let h=+m[1], mn=m[2], ap=h>=12?'PM':'AM'; h=h%12||12; return String(h).padStart(2,'0')+':'+mn+' '+ap;
+  }
+  function render(t){
+    const keys=[['Fajr','Fajr'],['Dhuhr','Dhuhr'],['Asr','Asr'],['Maghrib','Maghrib'],['Isha','Isha']];
+    prayerTimes.innerHTML=keys.map(([a,k])=>`<div class="row"><span>${a}</span><b>${fmt12(t[k])}</b></div>`).join('');
+  }
+  function tick(){
+    if(!timings)return;
+    const now=new Date();
+    const arr=[['Fajr',timings.Fajr],['Dhuhr',timings.Dhuhr],['Asr',timings.Asr],['Maghrib',timings.Maghrib],['Isha',timings.Isha]].map(([name,v])=>{
+      const m=String(v||'').match(/^(\d{1,2}):(\d{2})/); if(!m)return null;
+      const d=new Date(now); d.setHours(+m[1],+m[2],0,0); if(d<=now)d.setDate(d.getDate()+1); return {name,d};
+    }).filter(Boolean).sort((a,b)=>a.d-b.d);
+    if(!arr.length)return;
+    const x=arr[0], diff=Math.max(0,Math.floor((x.d-now)/1000));
+    nextPrayer.textContent=x.name+' • '+fmt12(timings[x.name]);
+    countdownEl.textContent=Math.floor(diff/3600)+'h '+Math.floor(diff%3600/60)+'m '+diff%60+'s';
+  }
+  async function load(lat,lon){
+    userLat=lat;userLon=lon;
+    prayerLocation.textContent='Location: '+lat.toFixed(3)+', '+lon.toFixed(3);
+    try{
+      const d=new Date(); const date=d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear();
+      const url='https://api.aladhan.com/v1/timings/'+date+'?latitude='+encodeURIComponent(lat)+'&longitude='+encodeURIComponent(lon)+'&method=3';
+      const r=await fetch(url); if(!r.ok)throw Error('Prayer service unavailable');
+      const j=await r.json(); timings=j.data&&j.data.timings; if(!timings)throw Error('No timings');
+      render(timings); tick(); clearInterval(countdownTimer); countdownTimer=setInterval(tick,1000); updateQibla();
+      qStatus.textContent='Qibla calculated for your location.';
+    }catch(e){
+      prayerLocation.textContent='Could not load local prayer times. Check internet and try again.';
+      prayerTimes.innerHTML='<div class="muted">Prayer time service is unavailable right now.</div>';
+    }
+  }
+  window.getPrayerLocation=function(){
+    if(!navigator.geolocation){prayerLocation.textContent='This browser does not support location.';return;}
+    prayerLocation.textContent='Requesting location permission…';
+    navigator.geolocation.getCurrentPosition(
+      p=>load(p.coords.latitude,p.coords.longitude),
+      ()=>{prayerLocation.textContent='Location permission denied. Allow location and try again.';},
+      {enableHighAccuracy:true,timeout:15000,maximumAge:600000}
+    );
+  };
+  function bearing(lat1,lon1,lat2,lon2){
+    const r=Math.PI/180,a=lat1*r,b=lat2*r,d=(lon2-lon1)*r;
+    const y=Math.sin(d)*Math.cos(b), x=Math.cos(a)*Math.sin(b)-Math.sin(a)*Math.cos(b)*Math.cos(d);
+    return (Math.atan2(y,x)/r+360)%360;
+  }
+  function updateQibla(){
+    if(userLat==null)return;
+    const q=bearing(userLat,userLon,21.422487,39.826206);
+    qDegree.textContent='Qibla: '+q.toFixed(1)+'° from true north';
+    qNeedle.style.transform='rotate('+q+'deg)';
+  }
+  window.enableQibla=async function(){
+    if(userLat==null){qStatus.textContent='First tap “Use My Location”.';return;}
+    try{
+      if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+        const res=await DeviceOrientationEvent.requestPermission();
+        if(res!=='granted'){qStatus.textContent='Compass permission was not granted.';return;}
+      }
+    }catch(e){}
+    if(compassOn)return;
+    compassOn=true;
+    const handler=function(e){
+      let heading=null;
+      if(typeof e.webkitCompassHeading==='number') heading=e.webkitCompassHeading;
+      else if(typeof e.alpha==='number') heading=360-e.alpha;
+      if(heading==null)return;
+      const q=bearing(userLat,userLon,21.422487,39.826206);
+      qNeedle.style.transform='rotate('+(q-heading)+'deg)';
+      qStatus.textContent='Live compass enabled • turn your phone until the 🕋 direction aligns.';
+    };
+    window.addEventListener('deviceorientationabsolute',handler,true);
+    window.addEventListener('deviceorientation',handler,true);
+    updateQibla();
+  };
+  window.addEventListener('load',function(){ /* location is requested only by user action */ });
+})();
+</script>
+
+
+<style>
+.nurA-card{background:#091c12;border:1px solid #204530;border-radius:20px;padding:18px;margin:12px 0;text-align:center}.nurA-icon{font-size:48px}.nurA-muted,.nurA-note{color:#91a99b;font-size:13px;line-height:1.6}.nurA-empty{padding:34px 12px;border:1px dashed #28523c;border-radius:18px;color:#789486;line-height:1.8}.nurA-empty b{color:#fff;font-size:18px}.nurA-owner{text-align:left}.nurA-ownerBtn,.nurA-btn{width:100%;border:0;border-radius:13px;padding:13px 15px;background:#18a66b;color:#fff;font-weight:800}.nurA-adminTitle{font-weight:800;font-size:18px;margin:10px 0}.nurA-owner input{width:100%;box-sizing:border-box;margin:6px 0;padding:13px;border-radius:12px;border:1px solid #28523c;background:#07170e;color:#fff;outline:0}.nurA-hide{display:none!important}.nurA-gray,.nurA-btn.gray{background:#203b34}.nurA-note{margin-top:10px}.nurA-track{display:flex;align-items:center;gap:10px;text-align:left;padding:12px;border:1px solid #204530;border-radius:15px;margin:8px 0}.nurA-track .grow{flex:1}.nurA-play{border:0;border-radius:11px;padding:10px 13px;background:#18a66b;color:#fff}.nurA-delete{border:0;border-radius:11px;padding:10px;background:#452525;color:#fff}.nurA-player audio{width:100%}.nurA-now{margin-top:12px;padding:14px;border:1px solid #28523c;border-radius:16px;background:#07170e}.nurA-controls{display:flex;align-items:center;gap:10px;margin-top:12px}.nurA-mainplay,.nurA-stop{border:0;border-radius:12px;padding:11px 15px;background:#18a66b;color:#fff;font-weight:800}.nurA-stop{background:#452525}.nurA-seek{flex:1;accent-color:#18a66b}.nurA-time{font-size:12px;color:#91a99b;min-width:82px;text-align:right}.nurA-volume{width:90px;accent-color:#18a66b}
+</style>
+<script id="nur-audio-owner-step1">
+(function(){
+  /* NUR BY SAJIT — Robust Nasheed Library
+     IndexedDB is preferred for persistence. Some Android content:// / file-open
+     environments reject IndexedDB's backing store, so this library automatically
+     falls back to an in-memory Blob library instead of blocking import/playback.
+     There is intentionally NO artificial audio-file size limit. */
+  const DB='NUR_BY_SAJIT_AUDIO_DB_V2', STORE='nasheeds', ADMIN='nurOwnerUnlockedV3', PIN='2026';
+  let currentAudio=null, currentURL=null, dbBroken=false;
+  const memoryStore=new Map();
+  let memoryNextId=-1;
+  const $=id=>document.getElementById(id);
+  const list=$('nurAUserList'), empty=$('nurAEmpty'), adminBox=$('nurAAdminBox'), uploadBox=$('nurAUploadBox'), fileInput=$('nurAFile');
+  function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function storageNote(){
+    const n=$('nurAStorageNote');
+    if(n) n.textContent=dbBroken?'⚡ Browser storage unavailable — Nasheed is kept safely in this session. Large files are supported.':'💾 Persistent library storage ready • Large audio files supported';
+  }
+  function openDB(){
+    if(dbBroken)return Promise.reject(new Error('IndexedDB unavailable'));
+    return new Promise((resolve,reject)=>{
+      let settled=false;
+      try{
+        const r=indexedDB.open(DB,1);
+        r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains(STORE)){const os=db.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});os.createIndex('createdAt','createdAt')}};
+        r.onsuccess=()=>{settled=true;const db=r.result;db.onversionchange=()=>db.close();resolve(db)};
+        r.onerror=()=>{if(!settled){dbBroken=true;storageNote();reject(r.error||new Error('IndexedDB open failed'))}};
+        r.onblocked=()=>{if(!settled){dbBroken=true;storageNote();reject(new Error('IndexedDB blocked'))}};
+      }catch(e){dbBroken=true;storageNote();reject(e)}
+    });
+  }
+  async function all(){
+    if(dbBroken)return Array.from(memoryStore.values()).sort((a,b)=>b.createdAt-a.createdAt);
+    try{
+      const db=await openDB();
+      return await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readonly'),os=tx.objectStore(STORE),r=os.getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error||new Error('Read failed'));tx.onerror=()=>reject(tx.error||new Error('Read transaction failed'))});
+    }catch(e){dbBroken=true;storageNote();return Array.from(memoryStore.values()).sort((a,b)=>b.createdAt-a.createdAt)}
+  }
+  async function add(item){
+    if(dbBroken){const id=memoryNextId--;memoryStore.set(id,{...item,id,sessionOnly:true});return id}
+    try{
+      const db=await openDB();
+      return await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite'),req=tx.objectStore(STORE).add(item);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('Save failed'));tx.onerror=()=>reject(tx.error||new Error('Save transaction failed'));tx.onabort=()=>reject(tx.error||new Error('Save aborted'))});
+    }catch(e){
+      dbBroken=true;storageNote();
+      const id=memoryNextId--;memoryStore.set(id,{...item,id,sessionOnly:true});
+      return id;
+    }
+  }
+  async function del(id){
+    if(memoryStore.has(id)){memoryStore.delete(id);return}
+    if(dbBroken)return;
+    try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('Delete failed'))})}catch(e){dbBroken=true;storageNote()}
+  }
+  async function get(id){
+    if(memoryStore.has(id))return memoryStore.get(id);
+    if(dbBroken)return null;
+    try{const db=await openDB();return await new Promise((resolve,reject)=>{const r=db.transaction(STORE,'readonly').objectStore(STORE).get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error('Read failed'))})}catch(e){dbBroken=true;storageNote();return null}
+  }
+  function render(){
+    all().then(items=>{
+      empty.style.display=items.length?'none':'block';
+      const isAdmin=sessionStorage.getItem(ADMIN)==='1';
+      list.innerHTML=items.map(x=>`<div class="nurA-track"><div class="grow"><b>${esc(x.title)}</b><div class="nurA-muted">${esc(x.artist||'Nasheed')} • ${formatSize(x.size)}${x.sessionOnly?' • Session':''}</div></div><button class="nurA-play" data-play="${x.id}">▶</button>${isAdmin?`<button class="nurA-delete" data-del="${x.id}">🗑</button>`:''}</div>`).join('');
+      list.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>play(Number(b.dataset.play)));
+      list.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>remove(Number(b.dataset.del)));
+      storageNote();
+    }).catch(e=>{empty.style.display='block';empty.innerHTML='⚠️<br><b>Library error</b><br><span>'+esc(e.message||e)+'</span>'});
+  }
+  function formatSize(n){return n<1024*1024?(Math.max(1,Math.round(n/1024))+' KB'):(n<1024*1024*1024?(Math.round(n/1024/1024*10)/10+' MB'):(Math.round(n/1024/1024/1024*10)/10+' GB'))}
+  $('nurAOwnerBtn').onclick=()=>adminBox.classList.toggle('nurA-hide');
+  $('nurAUnlock').onclick=()=>{if($('nurAPin').value===PIN){sessionStorage.setItem(ADMIN,'1');uploadBox.classList.remove('nurA-hide');$('nurAPin').value='';render()}else alert('Owner PIN ভুল')};
+  $('nurALock').onclick=()=>{sessionStorage.removeItem(ADMIN);uploadBox.classList.add('nurA-hide');render()};
+  fileInput.onchange=()=>{
+    const f=fileInput.files&&fileInput.files[0]; if(!f)return;
+    const t=$('nurATitle'); if(!t.value.trim())t.value=f.name.replace(/\.[^.]+$/,'');
+    $('nurAAdd').textContent='✅ Save Nasheed';
+  };
+  $('nurAAdd').onclick=async()=>{
+    if(sessionStorage.getItem(ADMIN)!=='1')return alert('Owner access required');
+    const f=fileInput.files&&fileInput.files[0]; if(!f){fileInput.click();return}
+    const title=$('nurATitle').value.trim()||f.name.replace(/\.[^.]+$/,'');
+    if(!title)return alert('Nasheed name দিন');
+    if(!f.type.startsWith('audio/')&&!/\.(mp3|m4a|aac|ogg|wav|flac|opus|webm)$/i.test(f.name))return alert('শুধু audio file দিন (MP3/M4A/AAC/OGG/WAV/FLAC/OPUS/WEBM)');
+    const btn=$('nurAAdd'); btn.disabled=true; btn.textContent='⏳ Importing...';
+    try{
+      /* Keep the File/Blob as-is. No base64 conversion, no artificial size limit. */
+      await add({title,artist:$('nurAArtist').value.trim(),blob:f,size:f.size,type:f.type||'audio/mpeg',createdAt:Date.now(),name:f.name});
+      fileInput.value='';$('nurATitle').value='';$('nurAArtist').value='';btn.textContent='➕ Import Nasheed';
+      await render();
+      alert(dbBroken?'✅ Nasheed Import হয়েছে। Browser-এর storage unavailable হওয়ায় এটি এই session-এ রাখা হয়েছে। বড় file-ও supported.':'✅ Nasheed সফলভাবে Import হয়েছে। বড় file-ও supported.');
+    }catch(e){alert('❌ Import হয়নি: '+(e.message||e));btn.textContent='➕ Import Nasheed'}
+    btn.disabled=false;
+  };
+  function fmtTime(sec){if(!Number.isFinite(sec)||sec<0)return '00:00';const m=Math.floor(sec/60),ss=Math.floor(sec%60);return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')}
+  async function play(id){
+    try{
+      const x=await get(id);if(!x)return alert('Nasheed file পাওয়া যায়নি।');
+      if(currentAudio){currentAudio.pause();currentAudio.src=''}
+      if(currentURL)URL.revokeObjectURL(currentURL);
+      currentURL=URL.createObjectURL(x.blob);currentAudio=new Audio(currentURL);currentAudio.preload='metadata';
+      const box=$('nurAPlayer');box.classList.remove('nurA-hide');
+      box.innerHTML='<div class="nurA-now"><b>🎵 Now Playing</b><div style="font-size:18px;margin-top:5px">'+esc(x.title)+'</div><div class="nurA-muted">'+esc(x.artist||'Nasheed')+'</div><div class="nurA-controls"><button id="nurAPlayPause" class="nurA-mainplay">⏸ Pause</button><input id="nurASeek" class="nurA-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="nurATime" class="nurA-time">00:00 / 00:00</span></div><div class="nurA-controls"><button id="nurAStop" class="nurA-stop">⏹ Stop</button><span style="flex:1"></span><span>🔊</span><input id="nurAVol" class="nurA-volume" type="range" min="0" max="1" value="1" step="0.01"></div></div>';
+      box.appendChild(currentAudio);currentAudio.style.display='none';
+      const pp=$('nurAPlayPause'),seek=$('nurASeek'),tm=$('nurATime'),stop=$('nurAStop'),vol=$('nurAVol');
+      pp.onclick=async()=>{if(!currentAudio)return;if(currentAudio.paused){try{await currentAudio.play();pp.textContent='⏸ Pause'}catch(e){alert('Audio play হয়নি: '+(e.message||e))}}else{currentAudio.pause();pp.textContent='▶ Play'}};
+      seek.oninput=()=>{if(currentAudio&&currentAudio.duration)currentAudio.currentTime=(Number(seek.value)/100)*currentAudio.duration};
+      vol.oninput=()=>{if(currentAudio)currentAudio.volume=Number(vol.value)};
+      stop.onclick=()=>{if(currentAudio){currentAudio.pause();currentAudio.currentTime=0;pp.textContent='▶ Play';seek.value=0;tm.textContent='00:00 / '+fmtTime(currentAudio.duration)}};
+      currentAudio.ontimeupdate=()=>{if(!currentAudio)return;const d=currentAudio.duration||0;seek.value=d?(currentAudio.currentTime/d)*100:0;tm.textContent=fmtTime(currentAudio.currentTime)+' / '+fmtTime(d)};
+      currentAudio.onloadedmetadata=()=>{tm.textContent='00:00 / '+fmtTime(currentAudio.duration)};
+      currentAudio.onended=()=>{pp.textContent='▶ Play';seek.value=100};
+      try{await currentAudio.play()}catch(e){pp.textContent='▶ Play';/* Browser autoplay policy may require a direct tap; the Play button remains ready. */}
+    }catch(e){alert('Audio play হয়নি: '+(e.message||e))}
+  }
+  async function remove(id){
+    if(sessionStorage.getItem(ADMIN)!=='1')return alert('Owner access required');
+    if(!confirm('এই Nasheed delete করবে?'))return;
+    try{await del(id);await render()}catch(e){alert('Delete হয়নি: '+e.message)}
+  }
+  window.NURUserPlay=play;window.NUROwnerDelete=remove;
+  render();
+})();
+</script>
+
+<script>
+// Home hero: a large rotating collection of nature/sky/ocean scenes. Changes every 5 seconds.
+(function(){
+  const hero=document.querySelector('.homeHero');
+  if(!hero) return;
+  const scenes=[
+    'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85&sat=-20',
+    'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1400&q=85',
+    'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=85&blur=1'
+  ];
+  let i=0;
+  scenes.forEach(u=>{const im=new Image();im.src=u;});
+  setInterval(()=>{
+    i=(i+1)%scenes.length;
+    hero.style.backgroundImage='linear-gradient(180deg,rgba(0,0,0,.10),rgba(0,0,0,.76)),url("'+scenes[i]+'")';
+  },5000);
+})();
+</script>
+
+<script>
+const quizBank=[
+['কুরআনের প্রথম সূরা কোনটি?',['আল-ফাতিহা','আল-বাকারা','আল-ইখলাস','আন-নাস'],0,'সূরা আল-ফাতিহা কুরআনের প্রথম সূরা।'],
+['কুরআনে মোট কতটি সূরা আছে?',['110','112','114','116'],2,'কুরআনে ১১৪টি সূরা রয়েছে।'],
+['আয়াতুল কুরসি কোন সূরার আয়াত?',['আল-ইখলাস','আল-বাকারা','ইয়াসিন','আন-নাস'],1,'আয়াতুল কুরসি সূরা আল-বাকারা ২:২৫৫।'],
+['সালাত দিনে কত ওয়াক্ত ফরজ?',['৩','৪','৫','৬'],2,'পাঁচ ওয়াক্ত সালাত ফরজ।'],
+['রমজানের রোজা কোন মাসে রাখা হয়?',['শাবান','রমজান','শাওয়াল','মুহররম'],1,'রমজান মাসে রোজা রাখা হয়।'],
+['কাবা শরিফ কোথায় অবস্থিত?',['মদিনা','মক্কা','জেরুজালেম','কায়রো'],1,'কাবা মক্কা নগরীতে অবস্থিত।'],
+['হিজরি বছরের প্রথম মাস কোনটি?',['রমজান','মুহররম','শাওয়াল','রজব'],1,'মুহররম হিজরি বছরের প্রথম মাস।'],
+['কুরআন কোন ভাষায় নাজিল হয়েছে?',['বাংলা','ফারসি','আরবি','উর্দু'],2,'কুরআন আরবি ভাষায় নাজিল হয়েছে।'],
+['সূরা ইখলাসে কয়টি আয়াত?',['৩','৪','৫','৬'],1,'সূরা আল-ইখলাসে ৪টি আয়াত।'],
+['সদকা সাধারণত কী বোঝায়?',['দান-সাহায্য','ভ্রমণ','ব্যবসা','ঘুম'],0,'সদকা হলো স্বেচ্ছায় দান ও কল্যাণের কাজ।'],
+['ওযু সাধারণত কোন ইবাদতের আগে প্রয়োজন হয়?',['সালাত','হজের সব কাজ','ঘুম','খাবার'],0,'সালাতের জন্য পবিত্রতা জরুরি।'],
+['জুমার নামাজ কোন দিনে হয়?',['বৃহস্পতিবার','শুক্রবার','শনিবার','রবিবার'],1,'জুমার নামাজ শুক্রবার আদায় করা হয়।'],
+['লাইলাতুল কদর কোন মাসে?',['রমজান','শাবান','শাওয়াল','সফর'],0,'লাইলাতুল কদর রমজান মাসে।'],
+['সাহরি কখন খাওয়া হয়?',['সূর্যাস্তের পর','ফজরের আগে','দুপুরে','ইশার পরে মাত্র'],1,'রোজার সাহরি ফজরের সময়ের আগে।'],
+['ইফতার কখন করা হয়?',['সূর্যোদয়ে','যোহরে','সূর্যাস্তে','মধ্যরাতে'],2,'সূর্যাস্তের পর ইফতার করা হয়।'],
+['ইসলামের পাঁচ স্তম্ভের একটি কোনটি?',['সালাত','ঘুম','ব্যবসা','ভ্রমণ'],0,'সালাত ইসলামের পাঁচ স্তম্ভের একটি।'],
+['হজ কোন শহরের সঙ্গে প্রধানভাবে সম্পর্কিত?',['মক্কা','ঢাকা','দিল্লি','ইস্তাম্বুল'],0,'হজের প্রধান স্থান মক্কা ও এর আশপাশের পবিত্র স্থানসমূহ।'],
+['কুরআনের সবচেয়ে বড় সূরা কোনটি?',['আল-ফাতিহা','আল-বাকারা','আল-কাওসার','আন-নাস'],1,'সূরা আল-বাকারা সবচেয়ে দীর্ঘ সূরা।'],
+['কুরআনের সবচেয়ে ছোট সূরা কোনটি?',['আল-কাওসার','আল-ফালাক','আন-নাস','আসর'],0,'সূরা আল-কাওসার আয়াত সংখ্যায় সবচেয়ে ছোট।'],
+['তাসবিহে সাধারণভাবে কোন শব্দটি ব্যবহৃত হয়?',['সুবহানাল্লাহ','হ্যালো','ধন্যবাদ','বিদায়'],0,'সুবহানাল্লাহ আল্লাহর পবিত্রতা ঘোষণা করে।'],
+['ইসলামি ক্যালেন্ডার কোন চন্দ্রচক্রের ওপর ভিত্তি করে?',['সূর্য','চাঁদ','মঙ্গল','শুক্র'],1,'হিজরি ক্যালেন্ডার চন্দ্রভিত্তিক।'],
+['ফজরের সালাত দিনের কোন সময়ে?',['ভোর','দুপুর','বিকেল','রাত গভীর'],0,'ফজর ভোরের সালাত।'],
+['মাগরিবের সালাত কখন?',['সূর্যোদয়ের পর','সূর্যাস্তের পর','দুপুরে','মধ্যরাতে'],1,'মাগরিব সূর্যাস্তের পর।'],
+['ইশার সালাত সাধারণত কখন?',['রাতে','ভোরে','দুপুরে','সূর্যোদয়ে'],0,'ইশা রাতের সালাত।'],
+['কুরআনে “বিসমিল্লাহির রাহমানির রাহিম” সাধারণত কোথায় লেখা থাকে?',['সূরার শুরুতে','প্রতিটি আয়াতের শেষে','শুধু শেষ সূরায়','শুধু প্রথম পৃষ্ঠায়'],0,'সূরার শুরুতে বিসমিল্লাহ থাকে; সূরা আত-তাওবার শুরুতে নেই।'],
+['“সবর” শব্দের অর্থ কী?',['ধৈর্য','ভ্রমণ','সম্পদ','খেলা'],0,'সবর অর্থ ধৈর্য ও দৃঢ়তা।'],
+['“শুকর” বলতে কী বোঝায়?',['কৃতজ্ঞতা','রাগ','ঘুম','ভ্রমণ'],0,'শুকর অর্থ কৃতজ্ঞতা প্রকাশ।'],
+['কুরআনের শেষ সূরা কোনটি?',['আল-ফালাক','আন-নাস','আল-ইখলাস','আল-কাফিরুন'],1,'সূরা আন-নাস কুরআনের শেষ সূরা।'],
+['সূরা আল-ফালাক ও আন-নাসকে একসঙ্গে কী বলা হয়?',['মুআউযাতাইন','হাওয়ামিম','মুসাব্বিহাত','সাবউল মাসানি'],0,'দুইটি আশ্রয়প্রার্থনার সূরাকে মুআউযাতাইন বলা হয়।'],
+['নামাজে কিবলা কোন দিকে?',['কাবার দিকে','উত্তর মেরু','সূর্যের দিকে','যেকোনো দিকে'],0,'সালাতে কাবার দিকে মুখ করা হয়।'],
+['“আলহামদুলিল্লাহ” এর অর্থের কাছাকাছি কোনটি?',['সমস্ত প্রশংসা আল্লাহর','আল্লাহ মহান','আল্লাহ ছাড়া উপাস্য নেই','আমি ক্ষমা চাই'],0,'আলহামদুলিল্লাহ অর্থ সমস্ত প্রশংসা আল্লাহর।'],
+['“আল্লাহু আকবার” এর অর্থ কী?',['আল্লাহ সর্বশ্রেষ্ঠ','আল্লাহ ক্ষমাশীল','আল্লাহ নিকটবর্তী','আল্লাহ দয়ালু'],0,'আল্লাহু আকবার অর্থ আল্লাহ সর্বশ্রেষ্ঠ।'],
+['“আস্তাগফিরুল্লাহ” কী বোঝায়?',['আমি আল্লাহর কাছে ক্ষমা চাই','আমি আল্লাহর প্রশংসা করি','আমি দান করি','আমি সালাত পড়ি'],0,'আস্তাগফিরুল্লাহ ক্ষমা প্রার্থনার বাক্য।'],
+['নবী মুহাম্মদ ﷺ কোথায় জন্মগ্রহণ করেন?',['মক্কা','মদিনা','তাইফ','জেরুজালেম'],0,'তিনি মক্কায় জন্মগ্রহণ করেন।'],
+['হিজরত করে নবী ﷺ কোন শহরে গিয়েছিলেন?',['মদিনা','কুফা','বাগদাদ','কায়রো'],0,'মক্কা থেকে মদিনায় হিজরত করেন।'],
+['সাহাবি বলতে কাদের বোঝায়?',['নবী ﷺ-এর সঙ্গী মুমিনদের','শুধু রাজাদের','শুধু ব্যবসায়ীদের','শুধু কবিদের'],0,'সাহাবি হলেন যারা নবী ﷺ-কে ঈমানসহ দেখেছেন ও সেই অবস্থায় মৃত্যুবরণ করেছেন।'],
+['যাকাত ইসলামের কোন ধরনের ইবাদত?',['আর্থিক ইবাদত','শুধু শারীরিক ব্যায়াম','ভ্রমণ','খেলা'],0,'যাকাত একটি আর্থিক ইবাদত।'],
+['সালাতের আগে পবিত্রতা অর্জনের একটি মাধ্যম কী?',['ওযু','ঘুম','খাবার','ভ্রমণ'],0,'ওযু পবিত্রতা অর্জনের একটি মাধ্যম।'],
+['দোয়া সাধারণত কার কাছে করা হয়?',['আল্লাহর কাছে','যেকোনো জড়বস্তুর কাছে','সূর্যের কাছে','গাছের কাছে'],0,'দোয়া আল্লাহর কাছেই করা হয়।'],
+['কুরআন পাঠের সময় কী রাখা ভালো?',['সম্মান ও মনোযোগ','অযত্ন','হাসাহাসি','তাড়াহুড়া'],0,'কুরআন পাঠে আদব, সম্মান ও মনোযোগ রাখা উত্তম।'],
+['রমজানের পর কোন মাস আসে?',['শাওয়াল','শাবান','রজব','মুহররম'],0,'রমজানের পর শাওয়াল মাস।']
+];
+let quizOrder=[],quizPos=0,gameScore=0,gameTimer=null,gameSeconds=0;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function gameStage(){return document.getElementById('gameStage')}
+function startGame(type){clearInterval(gameTimer);const st=gameStage();st.style.display='block';gameScore=0;if(type==='quiz'){if(!quizOrder.length||quizPos>=quizOrder.length){quizOrder=shuffle(quizBank.map((_,i)=>i));quizPos=0}renderQuiz()}else if(type==='memory')renderMemory();else if(type==='scramble')renderScramble();else if(type==='tap')renderTap();else if(type==='truefalse')renderTrueFalse();else renderNumber();st.scrollIntoView({behavior:'smooth',block:'start'})}
+function gameShell(title,body){return `<div class="gameHead"><div class="gameTitle">${title}</div><div class="gameScore">Score: ${gameScore}</div></div>${body}`}
+function renderQuiz(){const st=gameStage();if(quizPos>=quizOrder.length){quizOrder=shuffle(quizBank.map((_,i)=>i));quizPos=0}const q=quizBank[quizOrder[quizPos]];st.innerHTML=gameShell('🧠 Islamic Quiz',`<div class="muted">Question ${quizPos+1} • নতুন প্রশ্ন শেষ হলে আবার নতুন order-এ চলবে</div><div class="gameQuestion">${q[0]}</div><div class="gameOptions">${q[1].map((o,i)=>`<button class="gameOpt" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div><div id="gameFeedback"></div>`)}
+function answerQuiz(i){const idx=quizOrder[quizPos],q=quizBank[idx],opts=document.querySelectorAll('.gameOpt');opts.forEach((b,k)=>{b.disabled=true;if(k===q[2])b.classList.add('good');if(k===i&&i!==q[2])b.classList.add('bad')});if(i===q[2])gameScore++;document.getElementById('gameFeedback').innerHTML=`<div class="gameFeedback">${i===q[2]?'✅ Correct! +1':'❌ Wrong!'}<br>${q[3]}<br><button class="gameBtn" style="margin-top:10px" onclick="quizNext()">Next Question →</button></div>`}
+function quizNext(){quizPos++;if(quizPos>=quizOrder.length){quizOrder=[];quizPos=0;alert('🎉 Quiz set complete! নতুন প্রশ্নের order শুরু হচ্ছে।')}renderQuiz()}
+function renderMemory(){const vals=shuffle(['☪️','☪️','🌙','🌙','📖','📖','🕌','🕌']);window.mem=vals.map((v,i)=>({v,open:false,done:false}));window.memOpen=[];gameScore=0;gameStage().innerHTML=gameShell('🃏 Memory Match',`<div class="muted">সব pair মিলান</div><div id="memoryBoard" class="memoryGrid" style="margin-top:12px">${mem.map((x,i)=>`<button class="memoryCard" onclick="flipMemory(${i})">?</button>`).join('')}</div><div id="memoryMsg" class="gameFeedback" style="margin-top:12px">Find all pairs.</div>`)}
+function flipMemory(i){const m=mem[i];if(m.done||m.open||memOpen.length>=2)return;m.open=true;memOpen.push(i);renderMemoryBoard();if(memOpen.length===2){const [a,b]=memOpen;if(mem[a].v===mem[b].v){mem[a].done=mem[b].done=true;gameScore++;memOpen=[];setTimeout(()=>{renderMemoryBoard();if(mem.every(x=>x.done))document.getElementById('memoryMsg').innerHTML='🎉 You matched all pairs!'},300)}else setTimeout(()=>{mem[a].open=mem[b].open=false;memOpen=[];renderMemoryBoard()},650)}}
+function renderMemoryBoard(){document.getElementById('memoryBoard').innerHTML=mem.map((x,i)=>`<button class="memoryCard ${x.open||x.done?'open':''}" onclick="flipMemory(${i})">${x.open||x.done?x.v:'?'}</button>`).join('');document.querySelector('.gameScore').textContent='Score: '+gameScore}
+function renderScramble(){const words=['QURAN','SALAH','SABR','TAQWA','DUA','DHIKR','RAMADAN','MERCY','PEACE','NOOR','MOSQUE','FASTING'];const word=words[Math.floor(Math.random()*words.length)];window.scrWord=word;const sh=shuffle(word.split('')).join('');gameStage().innerHTML=gameShell('🔤 Word Scramble',`<div class="gameQuestion">Letters: <b>${sh}</b></div><input id="scrInput" class="search" placeholder="Type the word" autocomplete="off"><button class="gameBtn" onclick="checkScramble()">Check</button><div id="scrMsg" class="gameFeedback" style="margin-top:12px"></div>`)}
+function checkScramble(){const v=(document.getElementById('scrInput').value||'').trim().toUpperCase();const ok=v===scrWord;if(ok)gameScore++;document.getElementById('scrMsg').innerHTML=ok?'✅ Correct!':'❌ Not quite. The answer is <b>'+scrWord+'</b>';document.getElementById('scrMsg').innerHTML+='<br><button class="gameBtn" style="margin-top:10px" onclick="renderScramble()">New Word →</button>'}
+function renderTap(){gameScore=0;gameSeconds=10;gameStage().innerHTML=gameShell('⚡ Quick Tap',`<div class="muted">10 seconds • Tap as many times as possible</div><div id="tapTime" class="gameQuestion" style="text-align:center">10</div><button id="tapButton" class="tapTarget" onclick="tapPoint()">TAP</button><div id="tapMsg" class="gameFeedback" style="text-align:center">Ready?</div>`);gameTimer=setInterval(()=>{gameSeconds--;document.getElementById('tapTime').textContent=gameSeconds;if(gameSeconds<=0){clearInterval(gameTimer);document.getElementById('tapButton').disabled=true;document.getElementById('tapMsg').textContent='⏱ Time! Your score: '+gameScore}},1000)}
+function tapPoint(){gameScore++;document.querySelector('.gameScore').textContent='Score: '+gameScore;if(navigator.vibrate)navigator.vibrate(8)}
+function renderTrueFalse(){const facts=[['The Quran has 114 surahs.',true],['Friday is the day of Jumu\'ah prayer.',true],['Ramadan is the first month of the Hijri year.',false],['Al-Fatihah is the first surah.',true],['Maghrib is prayed before Fajr.',false],['The Kaaba is in Makkah.',true],['Al-Ikhlas has 4 verses.',true],['Shawwal comes before Ramadan.',false],['Sabr means patience.',true],['The Hijri calendar is lunar.',true]];const f=facts[Math.floor(Math.random()*facts.length)];window.tf=f;gameStage().innerHTML=gameShell('✅ True or False',`<div class="gameQuestion">${f[0]}</div><div style="display:flex;gap:9px"><button class="gameBtn" style="flex:1" onclick="answerTF(true)">TRUE</button><button class="gameBtn" style="flex:1;background:#345" onclick="answerTF(false)">FALSE</button></div><div id="tfMsg" class="gameFeedback"></div>`)}
+function answerTF(v){const ok=v===tf[1];if(ok)gameScore++;document.getElementById('tfMsg').innerHTML=(ok?'✅ Correct!':'❌ Wrong!')+'<br><button class="gameBtn" style="margin-top:10px" onclick="renderTrueFalse()">Next →</button>'}
+function renderNumber(){const nums=shuffle([1,2,3,4,5,6,7,8,9]);const target=nums[Math.floor(Math.random()*nums.length)];window.numTarget=target;gameStage().innerHTML=gameShell('🔢 Number Rush',`<div class="gameQuestion">Find number <b>${target}</b></div><div class="numberGrid">${nums.map(n=>`<button onclick="pickNumber(${n})">${n}</button>`).join('')}</div><div id="numMsg" class="gameFeedback" style="margin-top:12px"></div>`)}
+function pickNumber(n){const ok=n===numTarget;if(ok)gameScore++;document.getElementById('numMsg').innerHTML=ok?'🎯 Correct!':'❌ Wrong number — try the next round.';setTimeout(()=>renderNumber(),ok?500:700)}
+</script>
+<!-- NUR BY SAJIT — Firebase Web connection -->
+<script type="module" id="nur-firebase-connection">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCePsI5vhsgmmP-TxO3xLdIZNduhGxM3Es",
+    authDomain: "nur-by-sajit.firebaseapp.com",
+    projectId: "nur-by-sajit",
+    storageBucket: "nur-by-sajit.firebasestorage.app",
+    messagingSenderId: "473570077466",
+    appId: "1:473570077466:web:50c7e259aac34a55351aa3",
+    measurementId: "G-3GCRJPJ2L8"
+  };
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.NUR_FIREBASE = { app, db, config: firebaseConfig, ready: true };
+    window.dispatchEvent(new CustomEvent("nur-firebase-ready"));
+    console.log("NUR BY SAJIT • Firebase connected");
+  } catch (error) {
+    window.NUR_FIREBASE = { ready: false, error };
+    console.error("NUR BY SAJIT • Firebase connection failed", error);
+  }
+</script>
+
+</body>
+</html>
